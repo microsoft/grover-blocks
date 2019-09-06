@@ -1,0 +1,133 @@
+# Instructions to install dependencies and run the code
+
+We assume that the scheme one is trying to run, is under `/path/to/qsharp/lowmc`, and specify when instructions differ.
+
+## Dependencies
+
+These will be installed as part of the commands in the Environment setup section below.
+- dotnet core sdk 2.1+
+- qsharp sdk 0.7.1905.3109 (later versions will need changes to the C# code portions)
+- iqsharp
+- python 3
+- python qsharp package
+- FileHelpers dotnet package
+- SageMath to regenerate the provided affine layers and key expansion routines (if reproducing results)
+- A custom build of the Q# compiler (provided in the repository) that addresses a stackoverflow bug when building large files
+
+## Environment setup
+
+The following should work the same on Windows and Linux, with the minor differences noted below.
+
+- get the dotnet core sdk from https://www.microsoft.com/net/download
+- install it following the appropriate OS' instructions
+- install python 3 (with pip)
+- run the following commands in cmd/shell
+
+First install Q# and IQ# support
+
+```
+dotnet new -i Microsoft.Quantum.ProjectTemplates
+dotnet tool install -g Microsoft.Quantum.IQSharp
+```
+
+In theory, on Linux the last command should add `~/.dotnet/tools` to the PATH. Starting a new, shell session without rebooting *does not seem to work*, but logging out and in does.
+If not, a patch can be to explicitly modify the PATH on demand by running some of the commands as `PATH=$PATH:~/.dotnet/tools command`.
+
+Instead, on Windows, opening a new instance of cmd.exe or PowerShell should be enough.
+
+Get python3 support, will install jupyter (on Windows you may want to write `py -m pip` instead of `pip3`)
+```
+pip3 install qsharp --upgrade
+```
+On Linux, one may need to log out and in again.
+
+Install iqsharp jupyter support; this may need the Linux PATH overwrite
+```
+dotnet iqsharp install --user
+cd /path/to/qsharp/lowmc
+```
+
+## How to build
+
+### LowMC AffineLayer and KeyExpansion code generation
+Note that compiling these multiple hours as of now, due to the lack of optimisation in the Q# compiler.
+
+#### Generate random matrices from the LowMC spec
+Get `generate_matrices.py` from the official repo, and patch it to match the bit ordering used in the LowMC reference C implementation using the following commands.
+```
+git clone https://github.com/LowMC/lowmc.git
+cd lowmc
+git checkout e847fb160ad8ca1f373efd91a55b6d67f7deb425
+cd ..
+patch lowmc/generate_matrices.py -i generate_matrices.patch -o patched.py
+```
+
+Then generate the LowMC matrices as
+```
+python patched.py -b 32 -k 32 -r 10 -o L0.py
+python patched.py -b 128 -k 128 -r 20 -o L1.py
+python patched.py -b 192 -k 192 -r 30 -o L3.py
+python patched.py -b 256 -k 256 -r 38 -o L5.py
+```
+
+#### Port the matrices to Q#
+Using SageMath, generate Q# code.
+```
+sage affine_layers.py
+sage in_place_round_key_generation.py
+```
+
+### Build the Q# code
+This step is slow, compilation takes multiple hours.
+
+```
+cd /path/to/qsharp/lowmc
+dotnet build
+```
+
+## How to compute cost estimates
+```
+cd /path/to/qsharp/lowmc
+dotnet run --no-build
+```
+
+## How to run tests
+
+Since the compiler it's somewhat slow, tests require to modify the Q# Python module.
+
+### Modified Q# for Python
+
+Note: cp and rm may have a different syntax on Windows.
+```
+git clone https://github.com/microsoft/iqsharp.git
+cd iqsharp
+git checkout dbcffc3a5709fe0706fe3d44d3145b8b8a4a7ae0
+cd ..
+cp -r iqsharp/src/Python/qsharp/ .
+patch qsharp/clients/__init__.py qsharp_client.patch
+rm -rf iqsharp
+```
+
+### Linux
+On Linux this may need a PATH override
+```
+cd /path/to/qsharp/lowmc
+python3 qtests.py -v
+```
+
+### Windows
+```
+cd /path/to/qsharp/lowmc
+py qtests.py -v
+```
+Can also use `python` instead of `py` if PATH is not polluted with a version of Python2.7.
+
+## Python LowMC implementation tests
+
+If you want to test the Python implementations of LowMC used to test the Q# implementation, run
+```
+cd /path/to/lowmc
+sage in_place_round_key_generation.py -c 1
+python3 lowmc.py -v
+```
+The test vectors were generated using the reference LowMC C implementation from https://github.com/LowMC/lowmc

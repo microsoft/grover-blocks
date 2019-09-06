@@ -1,0 +1,115 @@
+1,3c1,17
+< blocksize = 256
+< keysize = 80
+< rounds = 12
+---
+> """
+> In Picnic notation:
+>     n The LowMC key and blocksize, in bits.
+>     s The LowMC number of s-boxes.
+>     r The LowMC number of rounds
+> 
+> L0 n 32 s 32 r 10, not proposed, just for testing
+> L1 n 128 s 10 r 20
+> L3 n 192 s 10 r 30
+> L5 n 256 s 10 r 38
+> """
+> 
+> # Default params from the lowmc repo
+> # blocksize = 256
+> # keysize = 80
+> # rounds = 12
+> # filename = "matrices_and_constants.py"
+10a25,41
+>     global blocksize
+>     global keysize
+>     global rounds
+> 
+>     import argparse
+>     parser = argparse.ArgumentParser()
+>     parser.add_argument("-b", "--blocksize", type=int, default=256)
+>     parser.add_argument("-k", "--keysize", type=int, default=80)
+>     parser.add_argument("-r", "--rounds", type=int, default=12)
+>     parser.add_argument("-o", "--filename", type=str, default="matrices_and_constnants.py")
+>     args = parser.parse_args()
+> 
+>     blocksize = args.blocksize
+>     keysize = args.keysize
+>     rounds = args.rounds
+>     filename = args.filename
+> 
+14a46
+>     linlayers.reverse()
+26,31c58,63
+<     with open('matrices_and_constants.dat', 'w') as matfile:
+<         s = 'LowMC matrices and constants\n'\
+<             '============================\n'\
+<             'Block size: ' + str(blocksize) + '\n'\
+<             'Key size: ' + str(keysize) + '\n'\
+<             'Rounds: ' + str(rounds) + '\n\n'
+---
+>     with open(filename, 'w') as matfile:
+>         s = '# LowMC matrices and constants\n'\
+>             '# ============================\n'\
+>             'blocksize = ' + str(blocksize) + '\n'\
+>             'keysize = ' + str(keysize) + '\n'\
+>             'rounds = ' + str(rounds) + '\n\n'
+33,34c65,67
+<         s = 'Linear layer matrices\n'\
+<             '---------------------'
+---
+>         s = '# Linear layer matrices\n'\
+>             '# ---------------------\n' \
+>             'LM = [\n'
+37c70,71
+<             s = '\nLinear layer ' + str(r + 1) + ':\n'
+---
+>             s = '\n\t# Linear layer ' + str(r + 1) + ':\n' \
+>                 '\t[\n'
+39c73,74
+<                 s += str(row) + '\n'
+---
+>                 s += '\t\t' + str(row[::-1]) + ',\n'
+>             s += '\t],\n'
+42,44c77,80
+<         s = '\nRound constants\n'\
+<               '---------------------'
+<         matfile.write(s)
+---
+>         s =   ']\n' \
+>               '\n# Round constants\n' \
+>               '# ---------------------\n' \
+>               'b = [\n'
+46,48c82,85
+<             s = '\nRound constant ' + str(r + 1) + ':\n'
+<             s += str(round_constants[r]) + '\n'
+<             matfile.write(s)
+---
+>             s += '\n\t# Round constant ' + str(r + 1) + ':\n'
+>             s += '\t' + str(round_constants[r][::-1]) + ',\n'
+>         s += ']\n'
+>         matfile.write(s)
+50,51c87,89
+<         s = '\nRound key matrices\n'\
+<               '---------------------'
+---
+>         s = '\n# Round key matrices\n' \
+>               '# ---------------------\n' \
+>               'KM = [\n'
+54,56c92,96
+<             s = '\nRound key matrix ' + str(r) + ':\n'
+<             for row in roundkey_matrices[r]:
+<                 s += str(row) + '\n'
+---
+>             s = '\n\t# Round key matrix ' + str(r) + ':\n' \
+>                 '\t[\n'
+>             for row in roundkey_matrices[r][::-1]:
+>                 s += '\t\t' + str(row[::-1]) + ',\n'
+>             s += '\t],\n'
+57a98,99
+>         s = ']\n'
+>         matfile.write(s)
+77c119
+<     
+---
+> 
