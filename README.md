@@ -5,8 +5,8 @@ The grover-pqc project contains implementations of Grover oracles for exhaustive
 The code was developed by [Microsoft Research](http://research.microsoft.com/) for experimentation purposes.
 
 ## Installation instructions
-- [AES](aes/INSTALL)
-- [LowMC](lowmc/INSTALL)
+- [`AES`](aes/INSTALL.md)
+- [`LowMC`](lowmc/INSTALL.md)
 
 ## Contributors
 - Fernando Virdia
