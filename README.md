@@ -1,6 +1,6 @@
 # Grover-pqc v1.0
 
-The grover-pqc project contains implementations of Grover oracles for exhaustive key search on block ciphers via Grover's search algorithm. Version 1.0 provides oracles for AES and LowMC. 
+The grover-pqc project contains implementations of Grover oracles for exhaustive key search on block ciphers via Grover's search algorithm. Version 1.0 provides oracles for AES and LowMC in the quantum-focused programming language Q# and depends on the Microsoft [Quantum Development Kit](https://www.microsoft.com/en-us/quantum/development-kit). 
 
 The code was developed by [Microsoft Research](http://research.microsoft.com/) for experimentation purposes.
 
