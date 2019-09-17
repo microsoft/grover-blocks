@@ -227,7 +227,7 @@ namespace QTests.AES
     open Microsoft.Quantum.Convert;
     open QUtilities;
 
-    operation SBox(_a: Result[], tower_field: Bool, costing: Bool) : Result[]
+    operation SBox(_a: Result[], tower_field: Bool, LPS19: Bool, costing: Bool) : Result[]
     {
         mutable res = new Result[8];
         using ((a, b) = (Qubit[8], Qubit[8]))
@@ -237,13 +237,20 @@ namespace QTests.AES
                 Set(_a[i-1], a[i-1]);
             }
 
-            if (tower_field)
+            if (LPS19)
             {
-                BoyarPeralta11.SBox(a, b, costing);
+                LPS19.SBox(a, b, costing);
             }
             else
             {
-                GLRS16.SBox(a, b, costing);
+                if (tower_field)
+                {
+                    BoyarPeralta11.SBox(a, b, costing);
+                }
+                else
+                {
+                    GLRS16.SBox(a, b, costing);
+                }
             }
 
             for (i in 1..8)
@@ -886,7 +893,7 @@ namespace QTests.AES
         mutable res_3 = new Result[32];
         mutable res_4 = new Result[32];
 
-        using ((state, key, ciphertext) = ( Qubit[4*32*(2*Nr)], Qubit[Nk*32], Qubit[4*32]))
+        using ((state, key, ciphertext) = ( Qubit[4*32*(in_place_mixcolumn ? Nr+1 | 2*Nr)], Qubit[Nk*32], Qubit[4*32]))
         {
             for (j in 0..3)
             {
@@ -933,7 +940,7 @@ namespace QTests.AES
                     Set(Zero, ciphertext[j*32 + i]);
                 }
             }
-            for (j in 0..(4*32*(2*Nr)-1))
+            for (j in 0..(4*32*(in_place_mixcolumn ? Nr+1 | 2*Nr)-1))
             {
                 Set(Zero, state[j]);
             }

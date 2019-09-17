@@ -110,13 +110,13 @@ namespace cs
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void SBox<Qop>(string comment = "", bool tower_field = true, bool free_swaps = true)
+        public static void SBox<Qop>(string comment = "", bool tower_field = true, bool LPS19 = false, bool free_swaps = true)
         {
             var sim = getTraceSimulator(false);
-            var res = QTests.AES.SBox.Run(sim, QBits(0), tower_field, free_swaps).Result;
+            var res = QTests.AES.SBox.Run(sim, QBits(0), tower_field, LPS19, free_swaps).Result;
             ProcessSim<Qop>(sim, comment);
             sim = getTraceSimulator(true);
-            res = QTests.AES.SBox.Run(sim, QBits(0), tower_field, free_swaps).Result;
+            res = QTests.AES.SBox.Run(sim, QBits(0), tower_field, LPS19, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);
         }
 

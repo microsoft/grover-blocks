@@ -9,6 +9,7 @@ QGF256.Sixteenth, 51, 0, 0, 0, 0, 0, 16, 0, in_place = false, 20
 QGF256.InPlace.SixtyFourth, 24, 0, 0, 0, 0, 0, 8, 0, in_place = true, 16
 GLRS16.SBox, 8683, 1028, 3584, 0, 0, 217, 16, 28, tower_field = false, 1692
 BoyarPeralta11.SBox, 658, 187, 136, 0, 47, 6, 16, 121, tower_field = true, 99
+LPS19.SBox, 810, 248, 164, 0, 41, 35, 16, 25, tower_field = true, 529
 QAES.ByteSub, 10696, 3250, 2176, 0, 836, 6, 256, 121, state size is the same for all, 105
 QAES.InPlace.ShiftRow, 0, 0, 0, 0, 0, 0, 128, 0, in_place = true - state size is the same for all, 0
 QAES.InPlace.MixWord, 277, 0, 0, 0, 0, 0, 32, 0, in_place = true, 111
@@ -134,9 +135,9 @@ QAES.Widest.FinalRound, 10778, 3198, 2176, 0, 813, 6, 1664, 121, state size is t
 QAES.SmartWide.FinalRound, 13538, 3992, 2720, 0, 1017, 6, 1664, 121, Nk = 4 - state size is the same for all but in-place expansion isn't, 107
 QAES.SmartWide.FinalRound, 13506, 3929, 2720, 0, 1001, 6, 1920, 121, Nk = 6 - state size is the same for all but in-place expansion isn't, 107
 QAES.SmartWide.FinalRound, 13560, 4023, 2720, 0, 1028, 6, 2176, 121, Nk = 8 - state size is the same for all but in-place expansion isn't, 107
-QAES.SmartWide.Rijndael, 291030, 79535, 54400, 0, 20311, 120, 2816, 121, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn, 2812
-QAES.SmartWide.Rijndael, 328620, 89388, 60928, 0, 22842, 120, 3392, 121, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn, 2992
-QAES.SmartWide.Rijndael, 402928, 110159, 75072, 0, 28164, 126, 3968, 121, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn, 3331
+QAES.SmartWide.Rijndael, 291180, 83176, 54400, 0, 13600, 120, 1664, 121, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn, 2810
+QAES.SmartWide.Rijndael, 328660, 93256, 60928, 0, 15232, 120, 1984, 121, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn, 2973
+QAES.SmartWide.Rijndael, 402948, 114918, 75072, 0, 18768, 126, 2304, 121, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn, 3341
 QAES.SmartWide.Rijndael, 293658, 79755, 54400, 0, 20365, 120, 2816, 121, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn, 2092
 QAES.SmartWide.Rijndael, 331918, 89705, 60928, 0, 22951, 120, 3392, 121, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn, 1876
 QAES.SmartWide.Rijndael, 406668, 110244, 75072, 0, 28214, 126, 3968, 121, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn, 1936

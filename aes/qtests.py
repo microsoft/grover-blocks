@@ -162,24 +162,26 @@ class Tests:
         pass
 
     @staticmethod
-    def SBox(cost=False, tower_field=True):
+    def SBox(cost=False, tower_field=True, LPS19=False):
         """
         TESTS:
             >>> Tests.SBox(tower_field=True)
-            Testing SBox(tower_field=True)
+            Testing SBox(tower_field=True, LPS19=False)
             >>> Tests.SBox(tower_field=False)
-            Testing SBox(tower_field=False)
+            Testing SBox(tower_field=False, LPS19=False)
+            >>> Tests.SBox(LPS19=True)
+            Testing SBox(tower_field=True, LPS19=True)
         """
-        print("%s SBox(tower_field=%s)" %("Costing" if cost else "Testing", tower_field))
+        print("%s SBox(tower_field=%s, LPS19=%s)" %("Costing" if cost else "Testing", tower_field, LPS19))
         from QTests.AES import SBox # pylint: disable=no-name-in-module,import-error
         res = []
         for _x in range(256):
             x = GF256Element(_x)
             if cost:
-                return SBox.estimate_resources(_a=x.coeffs, tower_field=tower_field, costing=True)
+                return SBox.estimate_resources(_a=x.coeffs, tower_field=tower_field, LPS19=LPS19, costing=True)
 
             sbox = GF256Element(aes.SBox(x))
-            qsbox = GF256Element(SBox.toffoli_simulate(_a=x.coeffs, tower_field=tower_field, costing=False))
+            qsbox = GF256Element(SBox.toffoli_simulate(_a=x.coeffs, tower_field=tower_field, LPS19=LPS19, costing=False))
             res.append(sbox == qsbox)
             if (sbox != qsbox):
                 print("Error")
