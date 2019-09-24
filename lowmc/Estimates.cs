@@ -26,11 +26,11 @@ namespace cs
             return new QCTraceSimulator(config);
         }
 
-        public static void ProcessSim<Qop>(QCTraceSimulator sim, string comment = "", bool full_depth = false)
+        public static void ProcessSim<Qop>(QCTraceSimulator sim, string comment = "", bool full_depth = false, string suffix = "")
         {
             if (!full_depth)
             {
-                DisplayCSV.CSV(sim.ToCSV(), typeof(Qop).FullName, false, comment);
+                DisplayCSV.CSV(sim.ToCSV(), typeof(Qop).FullName + suffix, false, comment);
             }
             else
             {
@@ -70,21 +70,21 @@ namespace cs
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void AffineLayer<Qop>(string comment = "", int round = 1, int blocksize = 128, int category = 1, bool free_swaps = true)
+        public static void AffineLayer<Qop>(string comment = "", int round = 1, int blocksize = 128, int category = 1, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
             var res = QTests.LowMC.AffineLayer.Run(sim, nQBits(blocksize, false), round, category, free_swaps).Result;
-            ProcessSim<Qop>(sim, comment);
+            ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
             res = QTests.LowMC.AffineLayer.Run(sim, nQBits(blocksize, false), round, category, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void KeyExpansion<Qop>(string comment = "", int round = 1, int blocksize = 128, int category = 1, bool free_swaps = true)
+        public static void KeyExpansion<Qop>(string comment = "", int round = 1, int blocksize = 128, int category = 1, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
             var res = QTests.LowMC.KeyExpansion.Run(sim, nQBits(blocksize, false), round, category, free_swaps).Result;
-            ProcessSim<Qop>(sim, comment);
+            ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
             res = QTests.LowMC.KeyExpansion.Run(sim, nQBits(blocksize, false), round, category, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);
@@ -100,21 +100,21 @@ namespace cs
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void Encrypt<Qop>(string comment = "", int blocksize = 128, int category = 1, bool free_swaps = true)
+        public static void Encrypt<Qop>(string comment = "", int blocksize = 128, int category = 1, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
             var res = QTests.LowMC.Encrypt.Run(sim, nQBits(blocksize, false), nQBits(blocksize, false), category, free_swaps).Result;
-            ProcessSim<Qop>(sim, comment);
+            ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
             res = QTests.LowMC.Encrypt.Run(sim, nQBits(blocksize, false), nQBits(blocksize, false), category, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void GroverOracle<Qop>(string comment = "", int blocksize = 128, int pairs = 1, int category = 1, bool free_swaps = true)
+        public static void GroverOracle<Qop>(string comment = "", int blocksize = 128, int pairs = 1, int category = 1, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
             var res = QTests.LowMC.GroverOracle.Run(sim, nQBits(blocksize, false), nQBits(blocksize*pairs, false), nBits(blocksize*pairs, false), pairs, category, free_swaps).Result;
-            ProcessSim<Qop>(sim, comment);
+            ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
             res = QTests.LowMC.GroverOracle.Run(sim, nQBits(blocksize, false), nQBits(blocksize*pairs, false), nBits(blocksize*pairs, false), pairs, category, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);

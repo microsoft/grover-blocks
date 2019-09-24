@@ -307,7 +307,6 @@ class Tests:
 
 
 def costs():
-    # Deprecated, use Driver.cs
     print(Tests.SBox(cost=True, in_place=False))
     print(Tests.SBox(cost=True, in_place=True))
     print(Tests.SBoxLayer(blocksize=128, sboxes=10, cost=True, in_place=True))

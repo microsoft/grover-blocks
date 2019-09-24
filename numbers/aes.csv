@@ -8,151 +8,157 @@ QGF256.InPlace.Fourth, 21, 0, 0, 0, 0, 0, 8, 0, in_place = true, 11
 QGF256.Sixteenth, 51, 0, 0, 0, 0, 0, 16, 0, in_place = false, 20
 QGF256.InPlace.SixtyFourth, 24, 0, 0, 0, 0, 0, 8, 0, in_place = true, 16
 GLRS16.SBox, 8683, 1028, 3584, 0, 0, 217, 16, 28, tower_field = false, 1692
-BoyarPeralta11.SBox, 658, 187, 136, 0, 47, 6, 16, 121, tower_field = true, 99
-LPS19.SBox, 810, 248, 164, 0, 41, 35, 16, 25, tower_field = true, 529
-QAES.ByteSub, 10696, 3250, 2176, 0, 836, 6, 256, 121, state size is the same for all, 105
+LPS19.SBox, 818, 264, 164, 0, 41, 35, 16, 25, tower_field = true, 497
+BoyarPeralta11.SBox, 654, 184, 136, 0, 34, 6, 16, 121, tower_field = true, 101
+QAES.ByteSub, 10642, 3300, 2176, 0, 544, 6, 256, 121, state size is the same for all, 107
 QAES.InPlace.ShiftRow, 0, 0, 0, 0, 0, 0, 128, 0, in_place = true - state size is the same for all, 0
 QAES.InPlace.MixWord, 277, 0, 0, 0, 0, 0, 32, 0, in_place = true, 111
 MaximovMixColumn.MixWord, 312, 0, 0, 0, 0, 0, 64, 62, in_place = false, 22
 QAES.InPlace.MixColumn, 1108, 0, 0, 0, 0, 0, 128, 0, widest = true - state size is the same for all, 111
 MaximovMixColumn.MixColumn, 1248, 0, 0, 0, 0, 0, 256, 62, widest = false - state size is the same for all, 22
 QAES.Widest.AddRoundKey, 128, 0, 0, 0, 0, 0, 256, 0, widest = true - state size is the same for all, 1
-QAES.InPlace.KeyExpansion, 2762, 807, 544, 0, 205, 6, 1408, 121, $KE_0^(Nk-1)$ - round 1, 108
-QAES.InPlace.KeyExpansion, 2766, 808, 544, 0, 207, 6, 1408, 121, $KE_0^(Nk-1)$ - round 2, 100
-QAES.InPlace.KeyExpansion, 2752, 781, 544, 0, 200, 6, 1408, 121, $KE_0^(Nk-1)$ - round 3, 108
-QAES.InPlace.KeyExpansion, 2762, 805, 544, 0, 205, 6, 1408, 121, $KE_0^(Nk-1)$ - round 4, 108
-QAES.InPlace.KeyExpansion, 2774, 821, 544, 0, 211, 6, 1408, 121, $KE_0^(Nk-1)$ - round 5, 102
-QAES.InPlace.KeyExpansion, 2766, 807, 544, 0, 207, 6, 1408, 121, $KE_0^(Nk-1)$ - round 6, 102
-QAES.InPlace.KeyExpansion, 2736, 760, 544, 0, 192, 6, 1408, 121, $KE_0^(Nk-1)$ - round 7, 108
-QAES.InPlace.KeyExpansion, 2766, 808, 544, 0, 207, 6, 1408, 121, $KE_0^(Nk-1)$ - round 8, 104
-QAES.InPlace.KeyExpansion, 2760, 798, 544, 0, 204, 6, 1408, 121, $KE_0^(Nk-1)$ - round 9, 104
-QAES.InPlace.KeyExpansion, 2758, 802, 544, 0, 203, 6, 1408, 121, $KE_0^(Nk-1)$ - round 10, 104
-QAES.InPlace.KeyExpansion, 2712, 829, 544, 0, 212, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 1, 103
+QAES.InPlace.KeyExpansion, 2748, 809, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 1, 102
+QAES.InPlace.KeyExpansion, 2742, 797, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 2, 102
+QAES.InPlace.KeyExpansion, 2760, 833, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 3, 108
+QAES.InPlace.KeyExpansion, 2766, 845, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 4, 102
+QAES.InPlace.KeyExpansion, 2758, 829, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 5, 104
+QAES.InPlace.KeyExpansion, 2786, 885, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 6, 108
+QAES.InPlace.KeyExpansion, 2762, 837, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 7, 104
+QAES.InPlace.KeyExpansion, 2764, 841, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 8, 104
+QAES.InPlace.KeyExpansion, 2758, 832, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 9, 104
+QAES.InPlace.KeyExpansion, 2760, 836, 544, 0, 136, 6, 1408, 121, $KE_0^(Nk-1)$ - round 10, 105
+QAES.InPlace.KeyExpansion, 2706, 853, 544, 0, 136, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 1, 103
 QAES.InPlace.KeyExpansion, 128, 0, 0, 0, 0, 0, 1664, 0, $KE_2^(Nk-1)$ - round 2, 4
-QAES.InPlace.KeyExpansion, 2742, 765, 544, 0, 195, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 3, 103
+QAES.InPlace.KeyExpansion, 2754, 821, 544, 0, 136, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 3, 101
 QAES.InPlace.KeyExpansion, 64, 0, 0, 0, 0, 0, 1664, 0, $KE_(2*Nk/3)^(Nk-1)$ - round 4, 2
-QAES.InPlace.KeyExpansion, 2698, 805, 544, 0, 205, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 4, 103
+QAES.InPlace.KeyExpansion, 2684, 809, 544, 0, 136, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 4, 103
 QAES.InPlace.KeyExpansion, 128, 0, 0, 0, 0, 0, 1664, 0, $KE_2^(Nk-1)$ - round 5, 4
-QAES.InPlace.KeyExpansion, 2776, 816, 544, 0, 212, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 6, 107
+QAES.InPlace.KeyExpansion, 2764, 841, 544, 0, 136, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 6, 105
 QAES.InPlace.KeyExpansion, 64, 0, 0, 0, 0, 0, 1664, 0, $KE_(2*Nk/3)^(Nk-1)$ - round 7, 2
-QAES.InPlace.KeyExpansion, 2678, 765, 544, 0, 195, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 7, 103
+QAES.InPlace.KeyExpansion, 2702, 845, 544, 0, 136, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 7, 103
 QAES.InPlace.KeyExpansion, 128, 0, 0, 0, 0, 0, 1664, 0, $KE_2^(Nk-1)$ - round 8, 4
-QAES.InPlace.KeyExpansion, 2756, 796, 544, 0, 202, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 9, 107
+QAES.InPlace.KeyExpansion, 2782, 877, 544, 0, 136, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 9, 107
 QAES.InPlace.KeyExpansion, 64, 0, 0, 0, 0, 0, 1664, 0, $KE_(2*Nk/3)^(Nk-1)$ - round 10, 2
-QAES.InPlace.KeyExpansion, 2696, 799, 544, 0, 204, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 10, 100
+QAES.InPlace.KeyExpansion, 2688, 817, 544, 0, 136, 6, 1664, 121, $KE_0^(Nk/3-1)$ - round 10, 103
 QAES.InPlace.KeyExpansion, 128, 0, 0, 0, 0, 0, 1664, 0, $KE_2^(Nk-1)$ - round 11, 4
-QAES.InPlace.KeyExpansion, 2782, 849, 544, 0, 215, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 12, 107
-QAES.InPlace.KeyExpansion, 2756, 787, 544, 0, 202, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 2, 100
-QAES.InPlace.KeyExpansion, 2770, 816, 544, 0, 209, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 3, 103
-QAES.InPlace.KeyExpansion, 2752, 788, 544, 0, 200, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 4, 103
-QAES.InPlace.KeyExpansion, 2754, 786, 544, 0, 201, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 5, 101
-QAES.InPlace.KeyExpansion, 2766, 809, 544, 0, 207, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 6, 101
-QAES.InPlace.KeyExpansion, 2760, 796, 544, 0, 204, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 7, 104
-QAES.InPlace.KeyExpansion, 2744, 773, 544, 0, 196, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 8, 104
-QAES.InPlace.KeyExpansion, 2768, 813, 544, 0, 208, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 9, 107
-QAES.InPlace.KeyExpansion, 2748, 774, 544, 0, 198, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 10, 107
-QAES.InPlace.KeyExpansion, 2756, 792, 544, 0, 202, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 11, 103
-QAES.InPlace.KeyExpansion, 2766, 806, 544, 0, 207, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 12, 105
-QAES.InPlace.KeyExpansion, 2740, 768, 544, 0, 194, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 13, 103
-QAES.InPlace.KeyExpansion, 2750, 783, 544, 0, 199, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 14, 103
-QAES.Widest.KeyExpansion, 28888, 8029, 5440, 0, 2044, 60, 1408, 121, in_place = false - Nr = 10 - Nk = 4 - not currently used, 1031
-QAES.Widest.KeyExpansion, 24036, 6457, 4352, 0, 1650, 48, 1664, 121, in_place = false - Nr = 12 - Nk = 6 - not currently used, 821
-QAES.Widest.KeyExpansion, 37554, 10397, 7072, 0, 2657, 78, 1920, 121, in_place = false - Nr = 14 - Nk = 8 - not currently used, 1019
-QAES.Widest.Round, 11900, 3226, 2176, 0, 820, 6, 384, 121, state size is the same for all, 184
-QAES.SmartWide.Round, 14624, 3943, 2720, 0, 1006, 6, 512, 121, round = 1 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14820, 4032, 2720, 0, 1034, 6, 512, 121, round = 1 - Nk = 4 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14666, 4015, 2720, 0, 1027, 6, 512, 121, round = 2 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14828, 4062, 2720, 0, 1038, 6, 512, 121, round = 2 - Nk = 4 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14644, 3988, 2720, 0, 1016, 6, 512, 121, round = 3 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14802, 3998, 2720, 0, 1025, 6, 512, 121, round = 3 - Nk = 4 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14642, 3967, 2720, 0, 1015, 6, 512, 121, round = 4 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14792, 4006, 2720, 0, 1020, 6, 512, 121, round = 4 - Nk = 4 - Maximov's mixcolumn, 105
-QAES.SmartWide.Round, 14620, 3934, 2720, 0, 1004, 6, 512, 121, round = 5 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14778, 3956, 2720, 0, 1013, 6, 512, 121, round = 5 - Nk = 4 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14642, 3982, 2720, 0, 1015, 6, 512, 121, round = 6 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14784, 3954, 2720, 0, 1016, 6, 512, 121, round = 6 - Nk = 4 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14650, 3983, 2720, 0, 1019, 6, 512, 121, round = 7 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14740, 3909, 2720, 0, 994, 6, 512, 121, round = 7 - Nk = 4 - Maximov's mixcolumn, 109
-QAES.SmartWide.Round, 14680, 4029, 2720, 0, 1034, 6, 512, 121, round = 8 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14794, 4004, 2720, 0, 1021, 6, 512, 121, round = 8 - Nk = 4 - Maximov's mixcolumn, 109
-QAES.SmartWide.Round, 14634, 3957, 2720, 0, 1011, 6, 512, 121, round = 9 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14798, 4011, 2720, 0, 1023, 6, 512, 121, round = 9 - Nk = 4 - Maximov's mixcolumn, 106
-QAES.SmartWide.Round, 14654, 3996, 2720, 0, 1021, 6, 512, 121, round = 10 - Nk = 4 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14768, 3957, 2720, 0, 1008, 6, 512, 121, round = 10 - Nk = 4 - Maximov's mixcolumn, 109
-QAES.SmartWide.Round, 14594, 4005, 2720, 0, 1023, 6, 576, 121, round = 1 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14690, 3906, 2720, 0, 1001, 6, 576, 121, round = 1 - Nk = 6 - Maximov's mixcolumn, 104
-QAES.SmartWide.Round, 12016, 3202, 2176, 0, 814, 6, 576, 121, round = 2 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 12186, 3242, 2176, 0, 829, 6, 576, 121, round = 2 - Nk = 6 - Maximov's mixcolumn, 104
-QAES.SmartWide.Round, 14638, 3955, 2720, 0, 1013, 6, 576, 121, round = 3 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14824, 4048, 2720, 0, 1036, 6, 576, 121, round = 3 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14684, 4042, 2720, 0, 1036, 6, 576, 121, round = 4 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14800, 3992, 2720, 0, 1024, 6, 576, 121, round = 4 - Nk = 6 - Maximov's mixcolumn, 110
-QAES.SmartWide.Round, 12030, 3215, 2176, 0, 821, 6, 576, 121, round = 5 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 12162, 3206, 2176, 0, 817, 6, 576, 121, round = 5 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14648, 3980, 2720, 0, 1018, 6, 576, 121, round = 6 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14768, 3969, 2720, 0, 1008, 6, 576, 121, round = 6 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14688, 4045, 2720, 0, 1038, 6, 576, 121, round = 7 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14836, 4073, 2720, 0, 1042, 6, 576, 121, round = 7 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 12022, 3199, 2176, 0, 817, 6, 576, 121, round = 8 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 12150, 3185, 2176, 0, 811, 6, 576, 121, round = 8 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14672, 4015, 2720, 0, 1030, 6, 576, 121, round = 9 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14740, 3909, 2720, 0, 994, 6, 576, 121, round = 9 - Nk = 6 - Maximov's mixcolumn, 105
-QAES.SmartWide.Round, 14664, 4019, 2720, 0, 1026, 6, 576, 121, round = 10 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14810, 4020, 2720, 0, 1029, 6, 576, 121, round = 10 - Nk = 6 - Maximov's mixcolumn, 110
-QAES.SmartWide.Round, 12058, 3260, 2176, 0, 835, 6, 576, 121, round = 11 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 12210, 3267, 2176, 0, 841, 6, 576, 121, round = 11 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14660, 4014, 2720, 0, 1024, 6, 576, 121, round = 12 - Nk = 6 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14776, 3966, 2720, 0, 1012, 6, 576, 121, round = 12 - Nk = 6 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 11898, 3215, 2176, 0, 819, 6, 640, 121, round = 1 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 12050, 3222, 2176, 0, 825, 6, 640, 121, round = 1 - Nk = 8 - Maximov's mixcolumn, 105
-QAES.SmartWide.Round, 14636, 3965, 2720, 0, 1012, 6, 640, 121, round = 2 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14816, 4050, 2720, 0, 1032, 6, 640, 121, round = 2 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14658, 4006, 2720, 0, 1023, 6, 640, 121, round = 3 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14798, 3994, 2720, 0, 1023, 6, 640, 121, round = 3 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14630, 3975, 2720, 0, 1009, 6, 640, 121, round = 4 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14740, 3893, 2720, 0, 994, 6, 640, 121, round = 4 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14684, 4052, 2720, 0, 1036, 6, 640, 121, round = 5 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14824, 4043, 2720, 0, 1036, 6, 640, 121, round = 5 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14656, 3999, 2720, 0, 1022, 6, 640, 121, round = 6 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14806, 4022, 2720, 0, 1027, 6, 640, 121, round = 6 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14658, 3999, 2720, 0, 1023, 6, 640, 121, round = 7 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14778, 3953, 2720, 0, 1013, 6, 640, 121, round = 7 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14610, 3901, 2720, 0, 999, 6, 640, 121, round = 8 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14776, 3968, 2720, 0, 1012, 6, 640, 121, round = 8 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14682, 4052, 2720, 0, 1035, 6, 640, 121, round = 9 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14826, 4047, 2720, 0, 1037, 6, 640, 121, round = 9 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14656, 4001, 2720, 0, 1022, 6, 640, 121, round = 10 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14812, 4042, 2720, 0, 1030, 6, 640, 121, round = 10 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14650, 3979, 2720, 0, 1019, 6, 640, 121, round = 11 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14794, 3989, 2720, 0, 1021, 6, 640, 121, round = 11 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14652, 3997, 2720, 0, 1020, 6, 640, 121, round = 12 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14808, 4007, 2720, 0, 1028, 6, 640, 121, round = 12 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14682, 4046, 2720, 0, 1035, 6, 640, 121, round = 13 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14818, 4036, 2720, 0, 1033, 6, 640, 121, round = 13 - Nk = 8 - Maximov's mixcolumn, 107
-QAES.SmartWide.Round, 14654, 4006, 2720, 0, 1021, 6, 640, 121, round = 14 - Nk = 8 - in_place mixcolumn, 184
-QAES.SmartWide.Round, 14796, 3989, 2720, 0, 1022, 6, 640, 121, round = 14 - Nk = 8 - Maximov's mixcolumn, 106
-QAES.Widest.FinalRound, 10778, 3198, 2176, 0, 813, 6, 1664, 121, state size is the same for all, 104
-QAES.SmartWide.FinalRound, 13538, 3992, 2720, 0, 1017, 6, 1664, 121, Nk = 4 - state size is the same for all but in-place expansion isn't, 107
-QAES.SmartWide.FinalRound, 13506, 3929, 2720, 0, 1001, 6, 1920, 121, Nk = 6 - state size is the same for all but in-place expansion isn't, 107
-QAES.SmartWide.FinalRound, 13560, 4023, 2720, 0, 1028, 6, 2176, 121, Nk = 8 - state size is the same for all but in-place expansion isn't, 107
-QAES.SmartWide.Rijndael, 291180, 83176, 54400, 0, 13600, 120, 1664, 121, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn, 2810
-QAES.SmartWide.Rijndael, 328660, 93256, 60928, 0, 15232, 120, 1984, 121, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn, 2973
-QAES.SmartWide.Rijndael, 402948, 114918, 75072, 0, 18768, 126, 2304, 121, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn, 3341
-QAES.SmartWide.Rijndael, 293658, 79755, 54400, 0, 20365, 120, 2816, 121, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn, 2092
-QAES.SmartWide.Rijndael, 331918, 89705, 60928, 0, 22951, 120, 3392, 121, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn, 1876
-QAES.SmartWide.Rijndael, 406668, 110244, 75072, 0, 28214, 126, 3968, 121, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn, 1936
-QAES.Widest.Rijndael, 293790, 79831, 54400, 0, 20411, 132, 2944, 121, smart_wide = false - Nr = 10 - Nk = 4, 2979
-QAES.Widest.Rijndael, 331652, 89581, 60928, 0, 22886, 132, 3456, 121, smart_wide = false - Nr = 12 - Nk = 6, 3122
-QAES.Widest.Rijndael, 406088, 109863, 75072, 0, 28080, 138, 3968, 121, smart_wide = false - Nr = 14 - Nk = 8, 3397
-QAES.SmartWide.GroverOracle, 292363, 80995, 54908, 0, 20660, 121, 257, 1408, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn, 2825
-QAES.SmartWide.GroverOracle, 584643, 161465, 109820, 0, 41148, 121, 385, 2944, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn, 2829
-QAES.SmartWide.GroverOracle, 329731, 90541, 61436, 0, 23080, 120, 321, 1664, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn, 2978
-QAES.SmartWide.GroverOracle, 659739, 180822, 122876, 0, 46104, 120, 449, 3520, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn, 2994
-QAES.SmartWide.GroverOracle, 404017, 111282, 75580, 0, 28391, 126, 385, 1920, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn, 3362
-QAES.SmartWide.GroverOracle, 808601, 222563, 151164, 0, 56807, 126, 513, 4096, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn, 3349
-QAES.SmartWide.GroverOracle, 294889, 81099, 54908, 0, 20663, 121, 257, 2560, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn, 2092
-QAES.SmartWide.GroverOracle, 589919, 161949, 109820, 0, 41266, 121, 385, 5248, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn, 2081
-QAES.SmartWide.GroverOracle, 332667, 90286, 61436, 0, 23008, 120, 321, 3072, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn, 1879
-QAES.SmartWide.GroverOracle, 665901, 180885, 122876, 0, 46105, 120, 449, 6336, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn, 1875
-QAES.SmartWide.GroverOracle, 407437, 110913, 75580, 0, 28281, 126, 385, 3584, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn, 1947
-QAES.SmartWide.GroverOracle, 815797, 222553, 151164, 0, 56765, 126, 513, 7424, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn, 1958
+QAES.InPlace.KeyExpansion, 2752, 817, 544, 0, 136, 6, 1664, 121, $KE_0^(2 Nk/3-1)$ - round 12, 103
+QAES.InPlace.KeyExpansion, 2730, 773, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 2, 103
+QAES.InPlace.KeyExpansion, 2754, 820, 544, 0, 136, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 3, 104
+QAES.InPlace.KeyExpansion, 2748, 809, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 4, 104
+QAES.InPlace.KeyExpansion, 2784, 880, 544, 0, 136, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 5, 103
+QAES.InPlace.KeyExpansion, 2774, 861, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 6, 107
+QAES.InPlace.KeyExpansion, 2756, 824, 544, 0, 136, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 7, 103
+QAES.InPlace.KeyExpansion, 2740, 793, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 8, 104
+QAES.InPlace.KeyExpansion, 2746, 804, 544, 0, 136, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 9, 107
+QAES.InPlace.KeyExpansion, 2762, 837, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 10, 107
+QAES.InPlace.KeyExpansion, 2758, 828, 544, 0, 136, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 11, 103
+QAES.InPlace.KeyExpansion, 2752, 817, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 12, 107
+QAES.InPlace.KeyExpansion, 2758, 828, 544, 0, 136, 6, 1920, 121, $KE_(Nk/2)^(Nk-1)$ - round 13, 107
+QAES.InPlace.KeyExpansion, 2746, 805, 544, 0, 136, 6, 1920, 121, $KE_0^(Nk/2-1)$ - round 14, 104
+QAES.Widest.KeyExpansion, 28948, 8472, 5440, 0, 1360, 60, 1408, 121, in_place = false - Nr = 10 - Nk = 4 - not currently used, 1024
+QAES.Widest.KeyExpansion, 23978, 6620, 4352, 0, 1088, 48, 1664, 121, in_place = false - Nr = 12 - Nk = 6 - not currently used, 835
+QAES.Widest.KeyExpansion, 37568, 10871, 7072, 0, 1768, 78, 1920, 121, in_place = false - Nr = 14 - Nk = 8 - not currently used, 1019
+QAES.Widest.Round, 11888, 3320, 2176, 0, 544, 6, 384, 121, state size is the same for all, 184
+QAES.SmartWide.Round, 14666, 4189, 2720, 0, 680, 6, 512, 121, round = 1 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14808, 4193, 2720, 0, 680, 6, 512, 121, round = 1 - Nk = 4 - Maximov's mixcolumn, 105
+QAES.SmartWide.Round, 14674, 4205, 2720, 0, 680, 6, 512, 121, round = 2 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14772, 4121, 2720, 0, 680, 6, 512, 121, round = 2 - Nk = 4 - Maximov's mixcolumn, 105
+QAES.SmartWide.Round, 14658, 4173, 2720, 0, 680, 6, 512, 121, round = 3 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14838, 4253, 2720, 0, 680, 6, 512, 121, round = 3 - Nk = 4 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14680, 4217, 2720, 0, 680, 6, 512, 121, round = 4 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14794, 4165, 2720, 0, 680, 6, 512, 121, round = 4 - Nk = 4 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14626, 4109, 2720, 0, 680, 6, 512, 121, round = 5 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14770, 4117, 2720, 0, 680, 6, 512, 121, round = 5 - Nk = 4 - Maximov's mixcolumn, 104
+QAES.SmartWide.Round, 14674, 4205, 2720, 0, 680, 6, 512, 121, round = 6 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14790, 4157, 2720, 0, 680, 6, 512, 121, round = 6 - Nk = 4 - Maximov's mixcolumn, 109
+QAES.SmartWide.Round, 14652, 4161, 2720, 0, 680, 6, 512, 121, round = 7 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14810, 4197, 2720, 0, 680, 6, 512, 121, round = 7 - Nk = 4 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14662, 4181, 2720, 0, 680, 6, 512, 121, round = 8 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14766, 4109, 2720, 0, 680, 6, 512, 121, round = 8 - Nk = 4 - Maximov's mixcolumn, 106
+QAES.SmartWide.Round, 14656, 4172, 2720, 0, 680, 6, 512, 121, round = 9 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14772, 4124, 2720, 0, 680, 6, 512, 121, round = 9 - Nk = 4 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14616, 4092, 2720, 0, 680, 6, 512, 121, round = 10 - Nk = 4 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14808, 4196, 2720, 0, 680, 6, 512, 121, round = 10 - Nk = 4 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14582, 4149, 2720, 0, 680, 6, 576, 121, round = 1 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14716, 4137, 2720, 0, 680, 6, 576, 121, round = 1 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 12010, 3308, 2176, 0, 544, 6, 576, 121, round = 2 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 12144, 3296, 2176, 0, 544, 6, 576, 121, round = 2 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14610, 4077, 2720, 0, 680, 6, 576, 121, round = 3 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14804, 4185, 2720, 0, 680, 6, 576, 121, round = 3 - Nk = 6 - Maximov's mixcolumn, 103
+QAES.SmartWide.Round, 14710, 4277, 2720, 0, 680, 6, 576, 121, round = 4 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14806, 4189, 2720, 0, 680, 6, 576, 121, round = 4 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 11998, 3284, 2176, 0, 544, 6, 576, 121, round = 5 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 12166, 3340, 2176, 0, 544, 6, 576, 121, round = 5 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14656, 4169, 2720, 0, 680, 6, 576, 121, round = 6 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14860, 4297, 2720, 0, 680, 6, 576, 121, round = 6 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14666, 4189, 2720, 0, 680, 6, 576, 121, round = 7 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14770, 4117, 2720, 0, 680, 6, 576, 121, round = 7 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 11988, 3264, 2176, 0, 544, 6, 576, 121, round = 8 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 12156, 3320, 2176, 0, 544, 6, 576, 121, round = 8 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14588, 4033, 2720, 0, 680, 6, 576, 121, round = 9 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14770, 4117, 2720, 0, 680, 6, 576, 121, round = 9 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14648, 4153, 2720, 0, 680, 6, 576, 121, round = 10 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14760, 4097, 2720, 0, 680, 6, 576, 121, round = 10 - Nk = 6 - Maximov's mixcolumn, 110
+QAES.SmartWide.Round, 12012, 3312, 2176, 0, 544, 6, 576, 121, round = 11 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 12150, 3308, 2176, 0, 544, 6, 576, 121, round = 11 - Nk = 6 - Maximov's mixcolumn, 104
+QAES.SmartWide.Round, 14696, 4249, 2720, 0, 680, 6, 576, 121, round = 12 - Nk = 6 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14812, 4201, 2720, 0, 680, 6, 576, 121, round = 12 - Nk = 6 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 11856, 3256, 2176, 0, 544, 6, 640, 121, round = 1 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 12012, 3288, 2176, 0, 544, 6, 640, 121, round = 1 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14638, 4133, 2720, 0, 680, 6, 640, 121, round = 2 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14764, 4105, 2720, 0, 680, 6, 640, 121, round = 2 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14642, 4140, 2720, 0, 680, 6, 640, 121, round = 3 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14804, 4184, 2720, 0, 680, 6, 640, 121, round = 3 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14642, 4141, 2720, 0, 680, 6, 640, 121, round = 4 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14756, 4089, 2720, 0, 680, 6, 640, 121, round = 4 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14676, 4208, 2720, 0, 680, 6, 640, 121, round = 5 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14858, 4292, 2720, 0, 680, 6, 640, 121, round = 5 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14634, 4125, 2720, 0, 680, 6, 640, 121, round = 6 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14778, 4133, 2720, 0, 680, 6, 640, 121, round = 6 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14630, 4116, 2720, 0, 680, 6, 640, 121, round = 7 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14764, 4104, 2720, 0, 680, 6, 640, 121, round = 7 - Nk = 8 - Maximov's mixcolumn, 105
+QAES.SmartWide.Round, 14640, 4137, 2720, 0, 680, 6, 640, 121, round = 8 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14808, 4193, 2720, 0, 680, 6, 640, 121, round = 8 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14640, 4136, 2720, 0, 680, 6, 640, 121, round = 9 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14786, 4148, 2720, 0, 680, 6, 640, 121, round = 9 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14644, 4145, 2720, 0, 680, 6, 640, 121, round = 10 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14794, 4165, 2720, 0, 680, 6, 640, 121, round = 10 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14640, 4136, 2720, 0, 680, 6, 640, 121, round = 11 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14776, 4128, 2720, 0, 680, 6, 640, 121, round = 11 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14656, 4169, 2720, 0, 680, 6, 640, 121, round = 12 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14828, 4233, 2720, 0, 680, 6, 640, 121, round = 12 - Nk = 8 - Maximov's mixcolumn, 104
+QAES.SmartWide.Round, 14622, 4100, 2720, 0, 680, 6, 640, 121, round = 13 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14794, 4164, 2720, 0, 680, 6, 640, 121, round = 13 - Nk = 8 - Maximov's mixcolumn, 107
+QAES.SmartWide.Round, 14636, 4129, 2720, 0, 680, 6, 640, 121, round = 14 - Nk = 8 - in_place mixcolumn, 184
+QAES.SmartWide.Round, 14756, 4089, 2720, 0, 680, 6, 640, 121, round = 14 - Nk = 8 - Maximov's mixcolumn, 106
+QAES.Widest.FinalRound, 10788, 3336, 2176, 0, 544, 6, 1664, 121, state size is the same for all, 107
+QAES.SmartWide.FinalRound, 13606, 4288, 2720, 0, 680, 6, 1664, 121, Nk = 4 - state size is the same for all but in-place expansion isn't, 108
+QAES.SmartWide.FinalRound, 13532, 4137, 2720, 0, 680, 6, 1920, 121, Nk = 6 - state size is the same for all but in-place expansion isn't, 107
+QAES.SmartWide.FinalRound, 13524, 4121, 2720, 0, 680, 6, 2176, 121, Nk = 8 - state size is the same for all but in-place expansion isn't, 106
+QAES.SmartWide.Rijndael_128_in-place-MC, 291150, 83116, 54400, 0, 13600, 120, 1664, 121, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn, 2827
+QAES.SmartWide.Rijndael_192_in-place-MC, 328612, 93160, 60928, 0, 15232, 120, 1984, 121, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn, 2987
+QAES.SmartWide.Rijndael_256_in-place-MC, 402878, 114778, 75072, 0, 18768, 126, 2304, 121, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn, 3353
+QAES.SmartWide.Rijndael_128_maximov-MC, 293730, 83236, 54400, 0, 13600, 120, 2816, 121, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn, 2094
+QAES.SmartWide.Rijndael_192_maximov-MC, 331752, 93280, 60928, 0, 15232, 120, 3392, 121, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn, 1879
+QAES.SmartWide.Rijndael_256_maximov-MC, 406288, 114318, 75072, 0, 18768, 126, 3968, 121, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn, 1955
+QAES.Widest.Rijndael_128_in-place-MC, 293758, 83212, 54400, 0, 13600, 132, 2944, 121, smart_wide = false - Nr = 10 - Nk = 4, 2995
+QAES.Widest.Rijndael_192_in-place-MC, 331496, 93040, 60928, 0, 15232, 132, 3456, 121, smart_wide = false - Nr = 12 - Nk = 6, 3113
+QAES.Widest.Rijndael_256_in-place-MC, 406176, 114718, 75072, 0, 18768, 138, 3968, 121, smart_wide = false - Nr = 14 - Nk = 8, 3385
+QAES.SmartWide.GroverOracle_128_in-place-MC_r1, 292313, 84428, 54908, 0, 13727, 121, 257, 1408, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 1, 2816
+QAES.SmartWide.GroverOracle_192_in-place-MC_r1, 329697, 94316, 61436, 0, 15359, 120, 321, 1664, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 1, 2978
+QAES.SmartWide.GroverOracle_256_in-place-MC_r1, 404139, 116286, 75580, 0, 18895, 126, 385, 1920, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 1, 3353
+QAES.SmartWide.GroverOracle_128_in-place-MC_r2, 585051, 169184, 109820, 0, 27455, 121, 385, 2944, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 2, 2815
+QAES.SmartWide.GroverOracle_192_in-place-MC_r2, 659727, 188520, 122876, 0, 30719, 120, 449, 3520, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 2, 2981
+QAES.SmartWide.GroverOracle_256_in-place-MC_r2, 808071, 231124, 151164, 0, 37791, 126, 513, 4096, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 2, 3356
+QAES.SmartWide.GroverOracle_128_in-place-MC_r3, 877081, 252524, 164732, 0, 41183, 121, 513, 4480, smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 3, 2830
+QAES.SmartWide.GroverOracle_192_in-place-MC_r3, 989879, 282968, 184316, 0, 46079, 120, 577, 5376, smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 3, 2982
+QAES.SmartWide.GroverOracle_256_in-place-MC_r3, 1212905, 347766, 226748, 0, 56687, 126, 641, 6272, smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 3, 3347
+QAES.SmartWide.GroverOracle_128_maximov-MC_r1, 294863, 84488, 54908, 0, 13727, 121, 257, 2560, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 1, 2086
+QAES.SmartWide.GroverOracle_192_maximov-MC_r1, 332665, 94092, 61436, 0, 15359, 120, 321, 3072, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 1, 1879
+QAES.SmartWide.GroverOracle_256_maximov-MC_r1, 407667, 116062, 75580, 0, 18895, 126, 385, 3584, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 1, 1951
+QAES.SmartWide.GroverOracle_128_maximov-MC_r2, 589643, 168288, 109820, 0, 27455, 121, 385, 5248, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 2, 2096
+QAES.SmartWide.GroverOracle_192_maximov-MC_r2, 665899, 188544, 122876, 0, 30719, 120, 449, 6336, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 2, 1890
+QAES.SmartWide.GroverOracle_256_maximov-MC_r2, 815645, 231712, 151164, 0, 37791, 126, 513, 7424, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 2, 1952
+QAES.SmartWide.GroverOracle_128_maximov-MC_r3, 884817, 252876, 164732, 0, 41183, 121, 513, 7936, smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 3, 2102
+QAES.SmartWide.GroverOracle_192_maximov-MC_r3, 999491, 283712, 184316, 0, 46079, 120, 577, 9600, smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 3, 1888
+QAES.SmartWide.GroverOracle_256_maximov-MC_r3, 1223087, 346290, 226748, 0, 56687, 126, 641, 11264, smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 3, 1956

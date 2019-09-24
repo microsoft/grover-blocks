@@ -26,11 +26,11 @@ namespace cs
             return new QCTraceSimulator(config);
         }
 
-        public static void ProcessSim<Qop>(QCTraceSimulator sim, string comment = "", bool full_depth = false)
+        public static void ProcessSim<Qop>(QCTraceSimulator sim, string comment = "", bool full_depth = false, string suffix="")
         {
             if (!full_depth)
             {
-                DisplayCSV.CSV(sim.ToCSV(), typeof(Qop).FullName, false, comment);
+                DisplayCSV.CSV(sim.ToCSV(), typeof(Qop).FullName + suffix, false, comment);
             }
             else
             {
@@ -224,7 +224,7 @@ namespace cs
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void Rijndael<Qop>(string comment = "", bool smart_wide = true, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true)
+        public static void Rijndael<Qop>(string comment = "", bool smart_wide = true, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
             if (smart_wide)
@@ -235,7 +235,7 @@ namespace cs
             {
                 var res = QTests.AES.WideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, true, free_swaps).Result;
             }
-            ProcessSim<Qop>(sim, comment);
+            ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
             if (smart_wide)
             {
@@ -248,7 +248,7 @@ namespace cs
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void GroverOracle<Qop>(string comment = "", bool smart_wide = true, int pairs = 1, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true)
+        public static void GroverOracle<Qop>(string comment = "", bool smart_wide = true, int pairs = 1, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
             if (smart_wide)
@@ -258,7 +258,7 @@ namespace cs
             {
                 // not implemented
             }
-            ProcessSim<Qop>(sim, comment);
+            ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
             if (smart_wide)
             {

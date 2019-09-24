@@ -27,8 +27,9 @@ namespace cs
 
             // AES
             Estimates.SBox<GLRS16.SBox>("tower_field = false", false, false, free_swaps);
-            Estimates.SBox<BoyarPeralta11.SBox>("tower_field = true", true, false, free_swaps);
+            // Estimates.SBox<NigelsSbox.SBox>("tower_field = true", true, free_swaps);
             Estimates.SBox<LPS19.SBox>("tower_field = true", true, true, free_swaps);
+            Estimates.SBox<BoyarPeralta11.SBox>("tower_field = true", true, false, free_swaps);
             Estimates.ByteSub<QAES.ByteSub>("state size is the same for all", free_swaps);
             Estimates.ShiftRow<QAES.InPlace.ShiftRow>("in_place = true - state size is the same for all", free_swaps);
             Estimates.MixWord<QAES.InPlace.MixWord>("in_place = true", true, free_swaps);
@@ -117,32 +118,35 @@ namespace cs
             Estimates.FinalRound<QAES.SmartWide.FinalRound>("Nk = 4 - state size is the same for all but in-place expansion isn't", true, 4, free_swaps);
             Estimates.FinalRound<QAES.SmartWide.FinalRound>("Nk = 6 - state size is the same for all but in-place expansion isn't", true, 6, free_swaps);
             Estimates.FinalRound<QAES.SmartWide.FinalRound>("Nk = 8 - state size is the same for all but in-place expansion isn't", true, 8, free_swaps);
-            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn", true, 10, 4, true, free_swaps);
-            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn", true, 12, 6, true, free_swaps);
-            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn", true, 14, 8, true, free_swaps);
-            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn", true, 10, 4, false, free_swaps);
-            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn", true, 12, 6, false, free_swaps);
-            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn", true, 14, 8, false, free_swaps);
-            Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 10 - Nk = 4", false, 10, 4, true, free_swaps);
-            Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 12 - Nk = 6", false, 12, 6, true, free_swaps);
-            Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 14 - Nk = 8", false, 14, 8, true, free_swaps);
+            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn", true, 10, 4, true, free_swaps, "_128_in-place-MC");
+            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn", true, 12, 6, true, free_swaps, "_192_in-place-MC");
+            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn", true, 14, 8, true, free_swaps, "_256_in-place-MC");
+            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn", true, 10, 4, false, free_swaps, "_128_maximov-MC");
+            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn", true, 12, 6, false, free_swaps, "_192_maximov-MC");
+            Estimates.Rijndael<QAES.SmartWide.Rijndael>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn", true, 14, 8, false, free_swaps, "_256_maximov-MC");
+            Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 10 - Nk = 4", false, 10, 4, true, free_swaps, "_128_in-place-MC");
+            Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 12 - Nk = 6", false, 12, 6, true, free_swaps, "_192_in-place-MC");
+            Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 14 - Nk = 8", false, 14, 8, true, free_swaps, "_256_in-place-MC");
 
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn", true, 1, 10, 4, true, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn", true, 2, 10, 4, true, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn", true, 1, 12, 6, true, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn", true, 2, 12, 6, true, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn", true, 1, 14, 8, true, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn", true, 2, 14, 8, true, free_swaps);
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 1", true, 1, 10, 4, true, free_swaps, "_128_in-place-MC_r1");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 1", true, 1, 12, 6, true, free_swaps, "_192_in-place-MC_r1");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 1", true, 1, 14, 8, true, free_swaps, "_256_in-place-MC_r1");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 2", true, 2, 10, 4, true, free_swaps, "_128_in-place-MC_r2");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 2", true, 2, 12, 6, true, free_swaps, "_192_in-place-MC_r2");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 2", true, 2, 14, 8, true, free_swaps, "_256_in-place-MC_r2");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 3", true, 3, 10, 4, true, free_swaps, "_128_in-place-MC_r3");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 3", true, 3, 12, 6, true, free_swaps, "_192_in-place-MC_r3");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 3", true, 3, 14, 8, true, free_swaps, "_256_in-place-MC_r3");
 
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn", true, 1, 10, 4, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn", true, 2, 10, 4, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn", true, 3, 10, 4, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn", true, 1, 12, 6, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn", true, 2, 12, 6, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn", true, 3, 12, 6, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn", true, 1, 14, 8, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn", true, 2, 14, 8, false, free_swaps);
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn", true, 3, 14, 8, false, free_swaps);
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 1", true, 1, 10, 4, false, free_swaps, "_128_maximov-MC_r1");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 1", true, 1, 12, 6, false, free_swaps, "_192_maximov-MC_r1");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 1", true, 1, 14, 8, false, free_swaps, "_256_maximov-MC_r1");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 2", true, 2, 10, 4, false, free_swaps, "_128_maximov-MC_r2");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 2", true, 2, 12, 6, false, free_swaps, "_192_maximov-MC_r2");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 2", true, 2, 14, 8, false, free_swaps, "_256_maximov-MC_r2");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 3", true, 3, 10, 4, false, free_swaps, "_128_maximov-MC_r3");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 3", true, 3, 12, 6, false, free_swaps, "_192_maximov-MC_r3");
+            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 3", true, 3, 14, 8, false, free_swaps, "_256_maximov-MC_r3");
 
             Console.WriteLine();
         }
