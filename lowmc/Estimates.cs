@@ -30,7 +30,7 @@ namespace cs
         {
             if (!full_depth)
             {
-                DisplayCSV.CSV(sim.ToCSV(), typeof(Qop).FullName + suffix, false, comment);
+                DisplayCSV.CSV(sim.ToCSV(), typeof(Qop).FullName, false, comment, false, suffix);
             }
             else
             {

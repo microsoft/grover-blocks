@@ -260,14 +260,14 @@ namespace cs
             Console.WriteLine();
         }
 
-        public static void CSV(Dictionary<String, String> csv, string line_name, bool display_header = false, string comment = "", bool all = false)
+        public static void CSV(Dictionary<String, String> csv, string line_name, bool display_header = false, string comment = "", bool all = false, string suffix="")
         {
             // print results
             if (display_header)
             {
                 Console.WriteLine("operation, CNOT count, 1-qubit Clifford count, T count, R count, M count, T depth, initial width, extra width, comment, ");
             }
-            Console.Write($"{Environment.NewLine}{line_name}, ");
+            Console.Write($"{Environment.NewLine}{line_name}{suffix}, ");
             var countEngine = new FileHelperAsyncEngine<OperationCounterCSV>();
             using (countEngine.BeginReadString(csv[MetricsCountersNames.primitiveOperationsCounter]))
             {
