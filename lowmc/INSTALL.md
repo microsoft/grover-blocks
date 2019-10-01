@@ -27,7 +27,7 @@ First install Q# and IQ# support
 
 ```
 dotnet new -i Microsoft.Quantum.ProjectTemplates
-dotnet tool install -g Microsoft.Quantum.IQSharp
+dotnet tool install -g Microsoft.Quantum.IQSharp --version 0.7.1905.3109
 ```
 
 In theory, on Linux the last command should add `~/.dotnet/tools` to the PATH. Starting a new, shell session without rebooting *does not seem to work*, but logging out and in does.
