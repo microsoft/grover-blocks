@@ -12,7 +12,6 @@ These will be installed as part of the commands in the Environment setup section
 - python qsharp package
 - FileHelpers dotnet package
 - SageMath to regenerate the provided affine layers and key expansion routines (if reproducing results)
-- A custom build of the Q# compiler (provided in the repository) that addresses a stackoverflow bug when building large files
 
 ## Environment setup
 
@@ -20,7 +19,7 @@ The following should work the same on Windows and Linux, with the minor differen
 
 - get the dotnet core sdk version 2.1 from https://www.microsoft.com/net/download
 - install it following the appropriate OS' instructions
-- install python 3 (with pip)
+- install python 3 (with pip and jupyter)
 - run the following commands in cmd/shell
 
 First install Q# and IQ# support
@@ -30,17 +29,25 @@ dotnet new -i Microsoft.Quantum.ProjectTemplates
 dotnet tool install -g Microsoft.Quantum.IQSharp --version 0.7.1905.3109
 ```
 
-In theory, on Linux the last command should add `~/.dotnet/tools` to the PATH. Starting a new, shell session without rebooting *does not seem to work*, but logging out and in does.
+In theory, on Linux the last command should add `~/.dotnet/tools` to the PATH. Starting a new bash process without rebooting *does not seem to work*, but logging out and in does.
 If not, a patch can be to explicitly modify the PATH on demand by running some of the commands as `PATH=$PATH:~/.dotnet/tools command`.
 
 Instead, on Windows, opening a new instance of cmd.exe or PowerShell should be enough.
 
-Get python3 support, will install jupyter (on Windows you may want to write `py -m pip` instead of `pip3`)
+Get python3 support (on windows you may want to write `py -m pip` instead of `pip3`)
+
+An implicity dependency to get python3 support is to install Jupyter.
+This can be done in many ways, varying from system to system. One conservative and hopefully portable possibility is to run 
+```
+pip3 install jupyter --user
+```
+
+We now get the qsharp python package.
 NOTE: the difference in qsharp versions is intended.
 ```
-pip3 install qsharp==0.8.1907.1701 --upgrade
+pip3 install qsharp==0.8.1907.1701 --user --upgrade
 ```
-On Linux, one may need to log out and in again.
+On Linux, one may need to log out and in again for the next command to work.
 
 Install iqsharp jupyter support; this may need the Linux PATH overwrite
 ```
