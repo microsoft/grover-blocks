@@ -18,7 +18,7 @@ Grover-blocks is licensed under the MIT License; see [`License`](LICENSE) for de
 
 # References
 [1] Samuel Jaques, Michael Naehrig, Martin Roetteler, and Fernando Virdia, "Implementations of the Grover oracle for key search on AES and LowMC"
-Preprint available [`here`](https://eprint.iacr.org/2019/???).
+Preprint available at [`https://eprint.iacr.org/2019/1146`](https://eprint.iacr.org/2019/1146).
 
 
 # Contributing
