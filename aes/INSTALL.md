@@ -5,7 +5,7 @@ We assume that the scheme one is trying to run, is under `/path/to/qsharp/aes`.
 ## Dependencies
 
 These will be installed as part of the commands in the Environment setup section below.
-- dotnet core sdk 2.1+
+- dotnet core sdk 2.1
 - qsharp sdk 0.7.1905.3109 (later versions will need changes to the C# code portions)
 - iqsharp
 - python 3
@@ -16,7 +16,7 @@ These will be installed as part of the commands in the Environment setup section
 
 The following should work the same on Windows and Linux, with the minor differences noted below.
 
-- get the dotnet core sdk from https://www.microsoft.com/net/download
+- get the dotnet core sdk version 2.1 from https://www.microsoft.com/net/download
 - install it following the appropriate OS' instructions
 - install python 3 (with pip)
 - run the following commands in cmd/shell
@@ -33,9 +33,10 @@ If not, a patch can be to explicitly modify the PATH on demand by running some o
 
 Instead, on Windows, opening a new instance of cmd.exe or PowerShell should be enough.
 
-Get python3 support, will install jupyter (on windows you may want to write `py -m pip` instead of `pip3`)
+Get python3 support, will install jupyter (on windows you may want to write `py -m pip` instead of `pip3`).
+NOTE: the difference in qsharp versions is intended.
 ```
-pip3 install qsharp --upgrade
+pip3 install qsharp==0.8.1907.1701 --upgrade
 ```
 On Linux, one may need to log out and in again.
 
