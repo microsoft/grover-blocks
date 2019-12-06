@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 #!/usr/bin/env sage
 from sage.all import RealField, pi, arcsin, sqrt, sin, log, floor, ceil, e, exp, Infinity
 R = RealField(1000)

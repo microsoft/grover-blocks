@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace QTests.GF256
 {
     open Microsoft.Quantum.Intrinsic;

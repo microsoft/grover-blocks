@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 all: affine_layers key_expansion
 
 affine_layers:

@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """
 In Picnic notation:
     n The LowMC key and blocksize, in bits.

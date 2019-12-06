@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace QUtilities
 {
     open Microsoft.Quantum.Intrinsic;

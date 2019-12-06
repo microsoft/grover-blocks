@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // https://www.nist.gov/publications/depth-16-circuit-aes-s-box
 
 namespace BoyarPeralta11

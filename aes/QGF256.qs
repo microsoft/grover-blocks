@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace QGF256
 {
     open Microsoft.Quantum.Intrinsic;

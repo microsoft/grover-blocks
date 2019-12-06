@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace QAES
 {
     open Microsoft.Quantum.Intrinsic;

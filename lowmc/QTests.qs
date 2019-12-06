@@ -1,4 +1,5 @@
-
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 namespace QTests.LowMC
 {
     open Microsoft.Quantum.Intrinsic;

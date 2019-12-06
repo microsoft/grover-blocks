@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 class GF256Element:
 
     _m = [1, 1, 0, 1, 1, 0, 0, 0, 1] # m(x) = x**8 + x**4 + x**3 + x + 1

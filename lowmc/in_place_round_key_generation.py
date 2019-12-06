@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 from sage.all import GF, matrix
 from plu_decomposition import PermutationToREWIRE, LowerTriangularToCNOT, UpperTriangularToCNOT
 import L1, L3, L5

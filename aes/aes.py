@@ -1,3 +1,4 @@
+# Copyright (c) Microsoft Corporation.// Licensed under the MIT license.
 from gf256 import GF256Element, GF256Poly
 
 COUNT = 0

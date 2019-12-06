@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 import qsharp
 from gf256 import GF256Element, GF256Poly
 import aes

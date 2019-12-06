@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
 // https://eprint.iacr.org/2019/833.pdf
 
 namespace MaximovMixColumn

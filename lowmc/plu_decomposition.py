@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 from sage.all import GF, matrix, vector, Permutation
 
 """
