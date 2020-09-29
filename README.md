@@ -5,6 +5,10 @@ The grover-blocks project contains implementations of Grover oracles for exhaust
 
 The code was developed by [Microsoft Research](http://research.microsoft.com/) for experimentation purposes.
 
+### Issue with estimating resources
+
+A problem with the ResourcesEstimator functionality in Q# has been found and reported in [Issue #192](https://github.com/microsoft/qsharp-runtime/issues/192). Currently, results may report independent lower bounds on depth and width that may not be simultaneously realizable in a quantum circuit. The Q# team has stated that they are working to resolve this issue.
+
 ## Installation instructions
 - [`AES`](aes/INSTALL.md)
 - [`LowMC`](lowmc/INSTALL.md)
@@ -19,7 +23,6 @@ Grover-blocks is licensed under the MIT License; see [`License`](LICENSE) for de
 # References
 [1] Samuel Jaques, Michael Naehrig, Martin Roetteler, and Fernando Virdia, "Implementing Grover oracles for quantum key search on AES and LowMC".
 Preprint available at [`https://eprint.iacr.org/2019/1146`](https://eprint.iacr.org/2019/1146).
-
 
 # Contributing
 
