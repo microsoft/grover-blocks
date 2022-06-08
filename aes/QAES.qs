@@ -9,9 +9,9 @@ namespace QAES
     {
         body (...)
         {
-            for (i in 0..3)
+            for i in 0..3
             {
-                for (j in 0..3)
+                for j in 0..3
                 {
                     // GLRS16.SBox(input_state[j][(i*8)..((i+1)*8-1)], ancilla[j][(i*8)..((i+1)*8-1)], costing);
                     BoyarPeralta11.SBox(input_state[j][(i*8)..((i+1)*8-1)], ancilla[j][(i*8)..((i+1)*8-1)], costing);
@@ -26,7 +26,7 @@ namespace QAES
     {
         body (...)
         {
-            for (i in 0..3)
+            for i in 0..3
             {
                 // GLRS16.SBox(input_word[(i*8)..((i+1)*8-1)], ancilla[(i*8)..((i+1)*8-1)], costing);
                 BoyarPeralta11.SBox(input_word[(i*8)..((i+1)*8-1)], ancilla[(i*8)..((i+1)*8-1)], costing);
@@ -45,9 +45,9 @@ namespace QAES.Widest
     {
         body (...)
         {
-            for (j in 0..3)
+            for j in 0..3
             {
-                for (i in 0..31)
+                for i in 0..31
                 {
                     CNOT(round_key[j*32 + i], state[j][i]);
                 }
@@ -71,7 +71,7 @@ namespace QAES.Widest
             // to be conserved, hence can't Rot/Sub W[i] without CNOTting it into
             // a temp qubyte since the Rot operation happens in-place
 
-            for (i in Nk..(4 * (Nr+1) - 1))
+            for i in Nk..(4 * (Nr+1) - 1)
             {
                 // since we can't operate SubByte in place on temp, we do it giving W[i] as output register
                 // this would later be set to W[i] = W[i - Nk] ^ temp, so we can first set it to = temp, and then
@@ -177,7 +177,7 @@ namespace QAES.Widest
                     state[(3*32)..(4*32-1)]
                 ], expanded_key[0..(4*32)]);
 
-            for (i in 1..(Nr-1))
+            for i in 1..(Nr-1)
             {
                 // round i \in [1..Nr-1]
                 Round([
@@ -216,7 +216,7 @@ namespace QAES.Widest
             ForwardRijndael(expanded_key, state, ciphertext, Nr, Nk, costing);
 
             // copy resulting ciphertext out
-            for (j in 0..3)
+            for j in 0..3
             {
                 CNOTBytes(state[(4*32*Nr + j*32)..(4*32*Nr + j*32 + 7)], ciphertext[(j*32 + 0)..(j*32 + 7)]);
                 CNOTBytes(state[(4*32*Nr + j*32 + 8)..(4*32*Nr + j*32 + 15)], ciphertext[(j*32 + 8)..(j*32 + 15)]);
@@ -357,7 +357,7 @@ namespace QAES.SmartWide
                 state[(3*32)..(4*32-1)]
             ], key);
 
-            for (i in 1..(Nr-1))
+            for i in 1..(Nr-1)
             {
                 // round i \in [1..Nr-1]
                 Round(in_place_mixcolumn ? [
@@ -437,13 +437,13 @@ namespace QAES.SmartWide
         body (...)
         {
             // copy loaded key
-            for (i in 0..(pairs-2))
+            for i in 0..(pairs-2)
             {
                 CNOTnBits(key_superposition, other_keys[(i*32*Nk)..((i+1)*32*Nk-1)], 32*Nk);
             }
 
             // compute AES encryption of the i-th target message
-            for (i in 0..(pairs-1))
+            for i in 0..(pairs-1)
             {
                 let state = plaintext[(i*128)..((i+1)*128-1)] + (in_place_mixcolumn ? state_ancillas[(i*128*Nr)..((i+1)*128*Nr-1)] | state_ancillas[(i*128*(2*Nr-1))..((i+1)*128*(2*Nr-1)-1)]);
                 let key = i == 0 ? key_superposition | other_keys[((i-1)*Nk*32)..(i*Nk*32-1)];
@@ -457,7 +457,7 @@ namespace QAES.SmartWide
     {
         body (...)
         {
-            using ((other_keys, state_ancillas) = (Qubit[32*Nk*(pairs-1)], Qubit[128*(in_place_mixcolumn ? Nr | (2*Nr-1))*pairs]))
+            use (other_keys, state_ancillas) = (Qubit[32*Nk*(pairs-1)], Qubit[128*(in_place_mixcolumn ? Nr | (2*Nr-1))*pairs])
             {
                 ForwardGroverOracle(other_keys, state_ancillas, key_superposition, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, costing);
 
@@ -472,7 +472,7 @@ namespace QAES.SmartWide
                 // }
 
                 mutable ciphertext = in_place_mixcolumn ? state_ancillas[(128*Nr-128)..(128*Nr-1)] | state_ancillas[128*(2*Nr-2)..(128*(2*Nr-1)-1)];
-                for (i in 1..(pairs-1))
+                for i in 1..(pairs-1)
                 {
                     set ciphertext = ciphertext + (in_place_mixcolumn ? state_ancillas[((i+1)*128*Nr-128)..((i+1)*128*Nr-1)] | state_ancillas[((i+1)*128*(2*Nr-1)-128)..((i+1)*128*(2*Nr-1)-1)]);
                 }
@@ -832,7 +832,7 @@ namespace QAES.InPlace
     {
         body (...)
         {
-            for (j in 0..3)
+            for j in 0..3
             {
                 MixWord(state[j], costing);
             }
@@ -844,7 +844,7 @@ namespace QAES.InPlace
     {
         body (...)
         {
-            for (i in 0..2)
+            for i in 0..2
             {
                 REWIREBytes(word[(i*8)..((i+1)*8-1)], word[((i+1)*8)..((i+2)*8-1)], costing);
             }
@@ -856,7 +856,7 @@ namespace QAES.InPlace
     {
         body (...)
         {
-            for (i in first_word..last_word)
+            for i in first_word..last_word
             {
                 if (i == 0)
                 {

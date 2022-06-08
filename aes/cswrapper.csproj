@@ -1,0 +1,16 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT license. -->
+<Project Sdk="Microsoft.Quantum.Sdk/0.24.208024"><!--Microsoft.NET.Sdk">-->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FileHelpers" Version="3.4.1" />
+    <PackageReference Include="Microsoft.Quantum.Standard" Version="0.24.201332" />
+  </ItemGroup>
+
+</Project>

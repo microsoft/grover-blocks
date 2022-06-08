@@ -142,7 +142,7 @@ namespace BoyarPeralta11
     {
         body (...)
         {
-            for (i in 1..n)
+            for i in 1..n
             {
                 T(input[0]);
                 T(input[1]);
@@ -186,7 +186,7 @@ namespace BoyarPeralta11
     {
         body (...)
         {
-            using ((t, m, l) = (Qubit[27], Qubit[63], Qubit[30]))
+            use (t, m, l) = (Qubit[27], Qubit[63], Qubit[30])
             {
                 let u = input[7..(-1)..0];
                 let s = output[7..(-1)..0];

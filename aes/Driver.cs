@@ -5,7 +5,8 @@ using System;
 using Microsoft.Quantum.Simulation.Core;
 using Microsoft.Quantum.Simulation.Simulators;
 
-namespace cs
+
+namespace cswrapper
 {
     class Driver
     {

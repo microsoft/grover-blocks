@@ -358,13 +358,13 @@ namespace LPS19
     {
         body (...)
         {
-            using ((t, z, s) = (Qubit[15], Qubit[1], Qubit[8]))
+            use (t, z, s) = (Qubit[15], Qubit[1], Qubit[8])
             {
                 let u = input[7..(-1)..0];
 
                 ForwardSBox(u, t, z, s, costing);
                 
-                for (i in 0..7)
+                for i in 0..7
                 {
                     CNOT(s[i], output[7-i]);
                 }

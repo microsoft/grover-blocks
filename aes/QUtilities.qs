@@ -15,7 +15,7 @@ namespace QUtilities
     operation SWAPBytes (x: Qubit[], y: Qubit[]) : Unit {
         body (...)
         {
-            for (i in 0..7)
+            for i in 0..7
             {
                 SWAP(x[i], y[i]);
             }
@@ -26,7 +26,7 @@ namespace QUtilities
     operation CNOTBytes (x: Qubit[], y: Qubit[]) : Unit {
         body (...)
         {
-            for (i in 0..7)
+            for i in 0..7
             {
                 CNOT(x[i], y[i]);
             }
@@ -37,7 +37,7 @@ namespace QUtilities
     operation CNOTnBits (x: Qubit[], y: Qubit[], n: Int) : Unit {
         body (...)
         {
-            for (i in 0..(n-1))
+            for i in 0..(n-1)
             {
                 CNOT(x[i], y[i]);
             }
@@ -136,7 +136,7 @@ namespace QUtilities
 
     operation AND(control1 : Qubit, control2 : Qubit, target : Qubit) : Unit {
         body (...) {
-            using (anc = Qubit()) {
+            use anc = Qubit() {
                 H(target);
                 LinearPrepare(control1, control2, target, anc);
                 Adjoint T(control1);
@@ -150,7 +150,7 @@ namespace QUtilities
         }
         adjoint (...) {
             H(target);
-            AssertProb([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
+            AssertMeasurementProbability([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
             if (IsResultOne(M(target))) {
                 S(control1);
                 S(control2);
@@ -211,7 +211,7 @@ namespace QUtilities
     // /// - For the circuit diagram see Figure 1 on
     // ///   [ Page 3 of arXiv:1210.0974v2 ](https://arxiv.org/pdf/1210.0974v2.pdf#page=2)
     operation ccnot_T_depth_1 (control1 : Qubit, control2 : Qubit, target : Qubit) : Unit is Adj + Ctl {
-        using (auxillaryRegister = Qubit[4]) {
+        use auxillaryRegister = Qubit[4] {
 
             // apply UVU† where U is outer circuit and V is inner circuit
             ApplyWithCA(TDepthOneCCNOTOuterCircuit, TDepthOneCCNOTInnerCircuit, auxillaryRegister + [target, control1, control2]);
@@ -281,7 +281,7 @@ namespace QUtilities
 					$"Cannot compress {nControls} control qubits into
 					{nNewControls} qubits because there are too few controls");
 				let compressLength = nControls - nNewControls;
-				for (idx in 0.. 2 .. nControls - 2){
+				for idx in 0.. 2 .. nControls - 2{
 					LPAND(controlQubits[idx], controlQubits[idx + 1], blankControlQubits[idx/2], costing);
 				}
 				if (nControls % 2 == 0){
@@ -316,7 +316,7 @@ namespace QUtilities
 			} elif (nQubits == 2){
 				ccnot(xs[0], xs[1], output, costing);
 			} else {
-				using ((spareControls, ancillaOutput) = (Qubit[nQubits - 2], Qubit())){
+				use (spareControls, ancillaOutput) = (Qubit[nQubits - 2], Qubit()){
 					CompressControls(xs, spareControls, ancillaOutput, costing);
 					CNOT(ancillaOutput, output);
 					(Adjoint CompressControls)(xs, spareControls, ancillaOutput, costing);
@@ -337,7 +337,7 @@ namespace QUtilities
             if (Length(target) == Length(qubitstring))
             {
                 // flip wires expected to be 0 in the target, to allow comparison
-                for (i in 0..(Length(target)-1))
+                for i in 0..(Length(target)-1)
                 {
                     if (target[i] == false)
                     {
@@ -349,7 +349,7 @@ namespace QUtilities
                 TestIfAllOnes(qubitstring, success, costing);
 
                 // undo flipping
-                for (i in 0..(Length(target)-1))
+                for i in 0..(Length(target)-1)
                 {
                     if (target[i] == false)
                     {
@@ -358,7 +358,7 @@ namespace QUtilities
                 }
             }
 
-            // this can also be done in the following way using the Q# standard library
+            // this can also be done in the following way use the Q# standard library
             // but it's more expensive
             // let controlled_op = ControlledOnBitString(target, X);
             // controlled_op(qubitstring, success);

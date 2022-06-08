@@ -18,9 +18,9 @@ namespace QGF256
         body (...)
         {
             // construct e
-            for (i in 0..6)
+            for i in 0..6
             {
-                for (j in (i+1)..7)
+                for j in (i+1)..7
                 {
                     ccnot(a[j], b[8+i-j], res[i], costing);
                 }
@@ -61,9 +61,9 @@ namespace QGF256
             CNOT(res[0], res[1]);
 
             // compute d
-            for (i in 0..7)
+            for i in 0..7
             {
-                for (j in 0..i)
+                for j in 0..i
                 {
                     ccnot(a[j], b[i-j], res[i], costing);
                 }
@@ -318,7 +318,7 @@ namespace QGF256
     {
         body (...)
         {
-            using ((c, d, e) = (Qubit[8], Qubit[8], Qubit[8]))
+            use (c, d, e) = (Qubit[8], Qubit[8], Qubit[8])
             {
                 Square(a, b);                                                   // A^2 --> B
                 Mul(a, b, c, costing);                                          // A*B-->C (Gives Beta_2)

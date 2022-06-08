@@ -14,7 +14,7 @@ namespace MaximovMixColumn
     {
         body (...)
         {
-            for (j in first_word..last_word)
+            for j in first_word..last_word
             {
                 MixWord(in_state[j], out_state[j]);
             }
@@ -31,7 +31,7 @@ namespace MaximovMixColumn
         // LPXOR(\3[\4], \5[\6], \1[\2]);
         body (...)
         {
-            using (t = Qubit[62])
+            use t = Qubit[62]
             {
                 LPXOR(x[15], x[23], t[0]);
                 LPXOR(x[7], x[31], t[1]);
@@ -129,7 +129,7 @@ namespace MaximovMixColumn
                 LPXOR(t[59], t[61], y[28]);
 
                 // now need to cleanup the t array
-                // everything is an XOR, fine not using Adjoint decorator
+                // everything is an XOR, fine not use Adjoint decorator
                 LPXOR(y[20], t[58], t[61]);
                 LPXOR(x[4], t[10], t[60]);
                 LPXOR(t[31], t[32], t[59]);
