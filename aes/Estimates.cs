@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 using System;
 using System.Collections.Generic;
+using Microsoft.Quantum.Simulation.Simulators;
 using Microsoft.Quantum.Simulation.Simulators.QCTraceSimulators;
 using Microsoft.Quantum.Simulation.Core;
 using static Utilities;
@@ -18,15 +19,18 @@ namespace cswrapper
             config.UseWidthCounter = true;
             config.UsePrimitiveOperationsCounter = true;
             config.ThrowOnUnconstrainedMeasurement = false;
-            config.OptimizeDepth = true;
+            config.OptimizeDepth = false;
             if (full_depth)
             {
                 config.TraceGateTimes[PrimitiveOperationsGroups.CNOT] = 1;
                 config.TraceGateTimes[PrimitiveOperationsGroups.Measure] = 1; // count all one and 2 qubit measurements as depth 1
                 config.TraceGateTimes[PrimitiveOperationsGroups.QubitClifford] = 1; // qubit Clifford depth 1
             }
-            return new QCTraceSimulator(config);
+            return new ResourcesEstimator(config);
+            // return new QCTraceSimulator(config);
         }
+
+
 
         public static void ProcessSim<Qop>(QCTraceSimulator sim, string comment = "", bool full_depth = false, string suffix="")
         {
@@ -50,6 +54,25 @@ namespace cswrapper
                     }
                 }
             }
+        }
+
+        public static void DepthTest<Qop>()
+        {
+            var sim = getTraceSimulator(false);
+            var res = QTests.GF256.MeasureDepth.Run(sim).Result;
+            ProcessSim<Qop>(sim, "");
+            sim = getTraceSimulator(true);
+            res = QTests.GF256.MeasureDepth.Run(sim).Result;
+            ProcessSim<Qop>(sim, "", true);
+        }
+         public static void AllOnesTest<Qop>()
+        {
+            var sim = getTraceSimulator(false);
+            var res = QTests.GF256.TestAllOnes.Run(sim, 128, true).Result;
+            ProcessSim<Qop>(sim, "");
+            sim = getTraceSimulator(true);
+            res = QTests.GF256.TestAllOnes.Run(sim, 128, true).Result;
+            ProcessSim<Qop>(sim, "", true);
         }
 
         public static void Mul<Qop>(string comment = "", bool unrolled = false, bool free_swaps = true)
@@ -250,27 +273,23 @@ namespace cswrapper
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void GroverOracle<Qop>(string comment = "", bool smart_wide = true, int pairs = 1, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
+        public static void GroverOracle<Qop>(string comment = "", bool widest = false, int pairs = 1, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
         {
             var sim = getTraceSimulator(false);
-            if (smart_wide)
-            {
-                var res = QTests.AES.SmartWideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128*pairs, false), nBits(128*pairs, false), pairs, Nr, Nk, in_place_mixcolumn, free_swaps).Result;
-            }
-            {
-                // not implemented
-            }
+            var res = QTests.AES.SmartWideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128*pairs, false), nBits(128*pairs, false), pairs, Nr, Nk, in_place_mixcolumn, widest, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
-            if (smart_wide)
-            {
-                var res = QTests.AES.SmartWideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128*pairs, false), nBits(128*pairs, false), pairs, Nr, Nk, in_place_mixcolumn, free_swaps).Result;
-            }
-            else
-            {
-                // not implemented
-            }
+            res = QTests.AES.SmartWideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128*pairs, false), nBits(128*pairs, false), pairs, Nr, Nk, in_place_mixcolumn, widest, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);
         }
+        // public static void WideGroverOracle<Qop>(string comment = "", int Nr = 10, int Nk = 4, bool free_swaps = true, string suffix = "")
+        // {
+        //     var sim = getTraceSimulator(false);
+        //     var res = QTests.AES.WideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128, false), nBits(128, false), Nr, Nk, free_swaps).Result;
+        //     ProcessSim<Qop>(sim, comment, false, suffix);
+        //     sim = getTraceSimulator(true);
+        //     res = QTests.AES.WideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128, false), nBits(128, false), Nr, Nk, free_swaps).Result;
+        //     ProcessSim<Qop>(sim, comment, true);
+        // }
     }
 }

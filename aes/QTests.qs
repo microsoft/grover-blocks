@@ -7,6 +7,29 @@ namespace QTests.GF256
     open Microsoft.Quantum.Convert;
     open QUtilities;
 
+    operation MeasureDepth() : Unit {
+        use qubits = Qubit[5] {
+            H(qubits[0]);
+            T(qubits[0]);
+            // let m = M(qubits[0]);
+            let m = Measure([PauliZ, size= 5], qubits);
+            // Microsoft.Quantum.Diagnostics.AssertMeasurementProbability([PauliZ], [qubits[0]], Zero, 0.5, "", 1e-10);
+
+            if m == One {
+                T(qubits[1]);
+            } else {
+                T(qubits[2]);
+            }
+        }
+    }
+
+    operation TestAllOnes(n: Int, costing: Bool) : Unit {
+        use (qubits, target) = (Qubit[n], Qubit()) {
+            TestIfAllOnes(qubits, target, costing);
+        }
+    }
+
+
     operation Inverse(_a: Result[], costing: Bool) : Result[]
     {
         mutable res = [Zero, size = 8];
@@ -246,8 +269,8 @@ namespace QTests.AES
             else
             {
                 if (tower_field)
-                {
-                    BoyarPeralta11.SBox(a, b, costing);
+                {   
+                    BoyarPeralta11.SBox(a, b, [], costing);
                 }
                 else
                 {
@@ -468,9 +491,9 @@ namespace QTests.AES
                     Set(_input_state[j * 32 + i], input_state[j][i]);
                 }
             }
-
-            QAES.ByteSub(input_state, output_state, costing);
-
+            use sBAnc = Qubit[4*4*BoyarPeralta11.SBoxAncCount()]{
+                QAES.ByteSub(input_state, output_state, sBAnc, costing);
+            }
             for i in 0..31
             {
                 set res_1 w/= i <- M(output_state[0][i]);
@@ -574,9 +597,9 @@ namespace QTests.AES
             {
                 Set(_key[i], key[i]);
             }
-
-            QAES.Widest.KeyExpansion(key, Nr, Nk, costing);
-
+            use sbAnc = Qubit[QAES.Widest.NumberOfKeyExpansionSubBytes(Nr, Nk)*4*BoyarPeralta11.SBoxAncCount()]{
+                QAES.Widest.KeyExpansion(key, Nr, Nk, sbAnc, costing);
+            }
             for i in 0..(32*4*(Nr+1)-1)
             {
                 set res w/= i <- M(key[i]);
@@ -602,7 +625,8 @@ namespace QTests.AES
                 Set(_key[i], key[i]);
             }
 
-            QAES.InPlace.KeyExpansion(key, kexp_round, Nk, low, high, costing);
+
+            QAES.InPlace.KeyExpansion(key, kexp_round, Nk, low, high, [], costing);
 
             for i in 0..(32*4*(Nr+1)-1)
             {
@@ -633,8 +657,8 @@ namespace QTests.AES
             let key_rounds = (Nr+1)*4/Nk;
             for round in 1..key_rounds
             {
-                QAES.InPlace.KeyExpansion(temp, round, Nk, 0, Nk/2, costing);
-                QAES.InPlace.KeyExpansion(temp, round, Nk, Nk/2+1, Nk-1, costing);
+                QAES.InPlace.KeyExpansion(temp, round, Nk, 0, Nk/2, [], costing);
+                QAES.InPlace.KeyExpansion(temp, round, Nk, Nk/2+1, Nk-1, [], costing);
                 if (round < key_rounds)
                 {
                     CNOTnBits(temp, key[round*Nk*32..((round+1)*Nk*32-1)], Nk*32);
@@ -692,17 +716,19 @@ namespace QTests.AES
                     Set(_round_key[j * 32 + i], round_key[32*j + i]);
                 }
             }
+            use sBAnc = Qubit[4*4*BoyarPeralta11.SBoxAncCount()]{
 
-            if (smart_wide)
-            {
-                QAES.SmartWide.Round(in_state, out_state, round_key, round, Nk, in_place_mixcolumn, costing);
-            }
-            else
-            {
-                // note in the test we use "round 0", but in practice
-                // "round 0" consists only in copying the initial 4 words
-                // of the expanded key onto the message, before starting rounds
-                QAES.Widest.Round(in_state, out_state[4..7], round_key, 0, costing);
+                if (smart_wide)
+                {
+                    QAES.SmartWide.Round(in_state, out_state, round_key, [], sBAnc, round, Nk, in_place_mixcolumn, costing);
+                }
+                else
+                {
+                    // note in the test we use "round 0", but in practice
+                    // "round 0" consists only in copying the initial 4 words
+                    // of the expanded key onto the message, before starting rounds
+                    QAES.Widest.Round(in_state, out_state[4..7], round_key, sBAnc, 0, costing);
+                }
             }
 
             for i in 0..31
@@ -767,14 +793,15 @@ namespace QTests.AES
                     Set(_round_key[j * 32 + i], round_key[4*32*Nr + 32*j + i]);
                 }
             }
-
-            if (smart_wide)
-            {
-                QAES.SmartWide.FinalRound(in_state, out_state, round_key, Nr, Nr - 6, costing);
-            }
-            else
-            {
-                QAES.Widest.FinalRound(in_state, out_state, round_key, Nr, costing);
+            use sBAnc = Qubit[4*4*BoyarPeralta11.SBoxAncCount()]{
+                if (smart_wide)
+                {
+                    QAES.SmartWide.FinalRound(in_state, out_state, round_key,[],  sBAnc, Nr, Nr - 6, costing);
+                }
+                else
+                {
+                    QAES.Widest.FinalRound(in_state, out_state, round_key, sBAnc, Nr, costing);
+                }
             }
 
             for i in 0..31
@@ -904,7 +931,7 @@ namespace QTests.AES
                 }
             }
 
-            QAES.SmartWide.Rijndael(key, state, ciphertext, Nr, Nk, in_place_mixcolumn, costing);
+            QAES.SmartWide.Rijndael(key, state, ciphertext, Nr, Nk, in_place_mixcolumn, false, costing);
 
             for i in 0..31
             {
@@ -948,8 +975,40 @@ namespace QTests.AES
         }
         return [res_1, res_2, res_3, res_4];
     }
+    // operation WideGroverOracle (_key: Result[], _plaintexts: Result[], target_ciphertext: Bool[], Nr: Int, Nk: Int, costing: Bool) : Result
+    // {
+    //     mutable res = Zero;
 
-    operation SmartWideGroverOracle (_key: Result[], _plaintexts: Result[], target_ciphertext: Bool[], pairs: Int, Nr: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Result
+    //     use (key, success, plaintext) = (Qubit[Nk*32], Qubit(), Qubit[128])
+    //     {
+    //         for i in 0..(Nk*32-1)
+    //         {
+    //             Set(_key[i], key[i]);
+    //         }
+    //         for i in 0..127
+    //         {
+    //             Set(_plaintexts[i], plaintext[i]);
+    //         }
+
+    //         // in actual use, we'd initialise set Success to |-), but not in this case
+    //         QAES.Widest.GroverOracle(key, success, plaintext, target_ciphertext, Nr, Nk, costing);
+
+    //         set res = M(success);
+
+    //         Set(Zero, success);
+    //         for i in 0..(Nk*32-1)
+    //         {
+    //             Set(Zero, key[i]);
+    //         }
+    //         for i in 0..127
+    //         {
+    //             Set(Zero, plaintext[i]);
+    //         }
+    //     }
+    //     return res;
+    // }
+
+    operation SmartWideGroverOracle (_key: Result[], _plaintexts: Result[], target_ciphertext: Bool[], pairs: Int, Nr: Int, Nk: Int, in_place_mixcolumn: Bool, widest: Bool, costing: Bool) : Result
     {
         mutable res = Zero;
 
@@ -968,7 +1027,7 @@ namespace QTests.AES
             }
 
             // in actual use, we'd initialise set Success to |-), but not in this case
-            QAES.SmartWide.GroverOracle(key, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, costing);
+            QAES.SmartWide.GroverOracle(key, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, widest, costing);
 
             set res = M(success);
 

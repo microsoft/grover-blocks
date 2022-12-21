@@ -6,6 +6,25 @@ namespace QUtilities
     open Microsoft.Quantum.Canon;
     open Microsoft.Quantum.Diagnostics;
 
+
+    // Blocks operations from parallelizing through this point
+    // i.e., forces mutual dependencies in the call graph
+    // Ruins full depth and full gate counts
+    operation Block(qubits: Qubit[]) : Unit {
+        body (...) {
+            for i in 0..Length(qubits) - 2 {
+                CNOT(qubits[i],qubits[i+1]);
+            }
+            for i in Length(qubits) - 1..(-1)..1 {
+                CNOT(qubits[i],qubits[i-1]);
+            }
+        }
+        controlled (controls, ... ){
+            Block(controls + qubits);
+        }
+        controlled adjoint auto;
+    }
+
     operation Set (desired: Result, q1: Qubit) : Unit {
         if (desired != M(q1)) {
             X(q1);
@@ -67,12 +86,12 @@ namespace QUtilities
         adjoint auto;
     }
 
-    operation ccnot(x: Qubit, y: Qubit, z: Qubit, costing: Bool) : Unit {
+    operation ccnot(x: Qubit, y: Qubit, z: Qubit, anc: Qubit[], costing: Bool) : Unit {
         body (...)
         {
             if (costing)
             {
-                ccnot_T_depth_1(x, y, z);
+                ccnot_T_depth_1(x, y, z, anc);
                 // ccnot_7_t_depth_4(x, y, z);
             }
             else
@@ -108,21 +127,44 @@ namespace QUtilities
         adjoint auto;
     }
 
-    operation LPAND (in_1: Qubit, in_2: Qubit, outp: Qubit, costing: Bool) : Unit
-    {
-        body (...)
-        {
-            if (costing)
-            {
-                AND(in_1, in_2, outp);
-            }
-            else
-            {
-                // ccnot does not assume output bit to be set to Zero!
-                ccnot(in_1, in_2, outp, costing);
+
+    operation LPANDWithAux(control1: Qubit, control2: Qubit, target: Qubit, anc: Qubit, costing: Bool) : Unit {
+        body (...) {
+            if (costing){
+                H(target);
+                LinearPrepare(control1, control2, target, anc);
+                Adjoint T(control1);
+                Adjoint T(control2);
+                T(target);
+                T(anc);
+                Adjoint LinearPrepare(control1, control2, target, anc);
+                H(target);
+                S(target);
+            } else {
+                ccnot(control1, control2, target, [anc], costing);
             }
         }
-        adjoint auto;
+        adjoint (...) {
+            if (costing) {
+                H(target);
+                AssertMeasurementProbability([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
+
+                if (IsResultOne(Measure([PauliZ, size=3], [control1, control2, target]))) {
+                    // Just do a C-Z? 
+                    // Also no reason to reset the target; that's implied by measurement
+                    CZ(control1, control2);
+
+                    // S(control1);
+                    // S(control2);
+                    // CNOT(control1, control2);
+                    // Adjoint S(control2);
+                    // CNOT(control1, control2);
+                    // X(target);
+                }
+                } else {
+                    ccnot(control1, control2, target, [anc], costing);
+                }
+        }
     }
 
     // --------------------------------------------------------------------------
@@ -151,12 +193,20 @@ namespace QUtilities
         adjoint (...) {
             H(target);
             AssertMeasurementProbability([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
-            if (IsResultOne(M(target))) {
-                S(control1);
-                S(control2);
-                CNOT(control1, control2);
-                Adjoint S(control2);
-                CNOT(control1, control2);
+
+            // Clumsy hack to escape the measurement-dependency bug
+            Block([target, control1, control2]);
+
+            if (IsResultOne(Measure([PauliZ, size=3], [control1, control2, target]))) {
+                // Just do a C-Z? 
+                CZ(control1, control2);
+
+                
+                // S(control1);
+                // S(control2);
+                // CNOT(control1, control2);
+                // Adjoint S(control2);
+                // CNOT(control1, control2);
                 X(target);
             }
         }
@@ -210,14 +260,16 @@ namespace QUtilities
     // /// # See Also
     // /// - For the circuit diagram see Figure 1 on
     // ///   [ Page 3 of arXiv:1210.0974v2 ](https://arxiv.org/pdf/1210.0974v2.pdf#page=2)
-    operation ccnot_T_depth_1 (control1 : Qubit, control2 : Qubit, target : Qubit) : Unit is Adj + Ctl {
-        use auxillaryRegister = Qubit[4] {
-
+    operation ccnot_T_depth_1 (control1 : Qubit, control2 : Qubit, target : Qubit, anc: Qubit[]) : Unit is Adj + Ctl {
+        if Length(anc) < 4 {
+            use aux = Qubit[4 - Length(anc)]{
+                ccnot_T_depth_1(control1, control2, target, anc+aux);
+            }
+        } else {
             // apply UVU† where U is outer circuit and V is inner circuit
-            ApplyWithCA(TDepthOneCCNOTOuterCircuit, TDepthOneCCNOTInnerCircuit, auxillaryRegister + [target, control1, control2]);
+            ApplyWithCA(TDepthOneCCNOTOuterCircuit, TDepthOneCCNOTInnerCircuit, anc + [target, control1, control2]);
         }
     }
-
 
     /// # See Also
     /// - Used as a part of @"Microsoft.Quantum.Samples.UnitTesting.TDepthOneCCNOT"
@@ -268,12 +320,12 @@ namespace QUtilities
 	/// ancilla which are not uncomputed.
 	/// If controlQubits has n qubits, then this needs n-2
 	/// blankControlQubits.
-	operation CompressControls(controlQubits : Qubit[], blankControlQubits : Qubit[], output : Qubit, costing: Bool) : Unit {
+	operation CompressControls(controlQubits : Qubit[], blankControlQubits : Qubit[], output : Qubit, andAnc: Qubit[], costing: Bool) : Unit {
 		body (...){
 			let nControls = Length(controlQubits);
 			let nNewControls = Length(blankControlQubits);
 			if (nControls == 2){
-				LPAND(controlQubits[0], controlQubits[1], output, costing);
+				LPANDWithAux(controlQubits[0], controlQubits[1], output, andAnc[0], costing);
 			} else {
 				Fact(nNewControls >= nControls/2, $"Cannot compress {nControls}
 					control qubits to {nNewControls} qubits without more ancilla");
@@ -282,12 +334,12 @@ namespace QUtilities
 					{nNewControls} qubits because there are too few controls");
 				let compressLength = nControls - nNewControls;
 				for idx in 0.. 2 .. nControls - 2{
-					LPAND(controlQubits[idx], controlQubits[idx + 1], blankControlQubits[idx/2], costing);
+					LPANDWithAux(controlQubits[idx], controlQubits[idx + 1], blankControlQubits[idx/2], andAnc[idx/2], costing);
 				}
 				if (nControls % 2 == 0){
-					CompressControls(blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output, costing);
+					CompressControls(blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output,  andAnc[(nControls)/2..Length(andAnc)-1], costing);
 				} else {
-					CompressControls([controlQubits[nControls - 1]] + blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output, costing);
+					CompressControls([controlQubits[nControls - 1]] + blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output, andAnc[(nControls-1)/2..Length(andAnc)-1], costing);
 				}
 			}
 		}
@@ -313,13 +365,13 @@ namespace QUtilities
 			let nQubits = Length(xs);
 			if (nQubits == 1){
 				CNOT(xs[0], output);
-			} elif (nQubits == 2){
-				ccnot(xs[0], xs[1], output, costing);
+			// } elif (nQubits == 2){
+			// 	ccnot(xs[0], xs[1], output, costing);
 			} else {
-				use (spareControls, ancillaOutput) = (Qubit[nQubits - 2], Qubit()){
-					CompressControls(xs, spareControls, ancillaOutput, costing);
+				use (spareControls, ancillaOutput, andAnc) = (Qubit[nQubits - 2], Qubit(), Qubit[nQubits-1]){
+					CompressControls(xs, spareControls, ancillaOutput, andAnc, costing);
 					CNOT(ancillaOutput, output);
-					(Adjoint CompressControls)(xs, spareControls, ancillaOutput, costing);
+					(Adjoint CompressControls)(xs, spareControls, ancillaOutput, andAnc, costing);
 				}
 			}
 		}

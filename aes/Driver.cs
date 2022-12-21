@@ -18,6 +18,9 @@ namespace cswrapper
 
             Console.Write("operation, CNOT count, 1-qubit Clifford count, T count, R count, M count, T depth, initial width, extra width, comment, full depth");
 
+            Estimates.DepthTest<QTests.GF256.MeasureDepth>();
+            Estimates.AllOnesTest<QTests.GF256.TestAllOnes>();
+            
             // GF256
             Estimates.Mul<QGF256.Mul>("unrolled = false", false, free_swaps);
             Estimates.Mul<QGF256.UnrolledMul>("unrolled = true", true, free_swaps);
@@ -131,26 +134,29 @@ namespace cswrapper
             Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 12 - Nk = 6", false, 12, 6, true, free_swaps, "_192_in-place-MC");
             Estimates.Rijndael<QAES.Widest.Rijndael>("smart_wide = false - Nr = 14 - Nk = 8", false, 14, 8, true, free_swaps, "_256_in-place-MC");
 
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 1", true, 1, 10, 4, true, free_swaps, "_128_in-place-MC_r1");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 1", true, 1, 12, 6, true, free_swaps, "_192_in-place-MC_r1");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 1", true, 1, 14, 8, true, free_swaps, "_256_in-place-MC_r1");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 2", true, 2, 10, 4, true, free_swaps, "_128_in-place-MC_r2");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 2", true, 2, 12, 6, true, free_swaps, "_192_in-place-MC_r2");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 2", true, 2, 14, 8, true, free_swaps, "_256_in-place-MC_r2");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 3", true, 3, 10, 4, true, free_swaps, "_128_in-place-MC_r3");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 3", true, 3, 12, 6, true, free_swaps, "_192_in-place-MC_r3");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 3", true, 3, 14, 8, true, free_swaps, "_256_in-place-MC_r3");
+            bool widest = false;
+            for (int i=0; i < 2; i++){
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 1", widest, 1, 10, 4, true, free_swaps, "_128_in-place-MC_r1");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 1", widest, 1, 12, 6, true, free_swaps, "_192_in-place-MC_r1");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 1", widest, 1, 14, 8, true, free_swaps, "_256_in-place-MC_r1");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 2", widest, 2, 10, 4, true, free_swaps, "_128_in-place-MC_r2");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 2", widest, 2, 12, 6, true, free_swaps, "_192_in-place-MC_r2");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 2", widest, 2, 14, 8, true, free_swaps, "_256_in-place-MC_r2");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 10 - Nk = 4 - in_place mixcolumn - r = 3", widest, 3, 10, 4, true, free_swaps, "_128_in-place-MC_r3");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 12 - Nk = 6 - in_place mixcolumn - r = 3", widest, 3, 12, 6, true, free_swaps, "_192_in-place-MC_r3");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 14 - Nk = 8 - in_place mixcolumn - r = 3", widest, 3, 14, 8, true, free_swaps, "_256_in-place-MC_r3");
 
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 1", true, 1, 10, 4, false, free_swaps, "_128_maximov-MC_r1");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 1", true, 1, 12, 6, false, free_swaps, "_192_maximov-MC_r1");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 1", true, 1, 14, 8, false, free_swaps, "_256_maximov-MC_r1");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 2", true, 2, 10, 4, false, free_swaps, "_128_maximov-MC_r2");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 2", true, 2, 12, 6, false, free_swaps, "_192_maximov-MC_r2");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 2", true, 2, 14, 8, false, free_swaps, "_256_maximov-MC_r2");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 3", true, 3, 10, 4, false, free_swaps, "_128_maximov-MC_r3");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 3", true, 3, 12, 6, false, free_swaps, "_192_maximov-MC_r3");
-            Estimates.GroverOracle<QAES.SmartWide.GroverOracle>("smart_wide = true - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 3", true, 3, 14, 8, false, free_swaps, "_256_maximov-MC_r3");
-
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 1", widest, 1, 10, 4, false, free_swaps, "_128_maximov-MC_r1");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 1", widest, 1, 12, 6, false, free_swaps, "_192_maximov-MC_r1");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 1", widest, 1, 14, 8, false, free_swaps, "_256_maximov-MC_r1");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 2", widest, 2, 10, 4, false, free_swaps, "_128_maximov-MC_r2");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 2", widest, 2, 12, 6, false, free_swaps, "_192_maximov-MC_r2");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 2", widest, 2, 14, 8, false, free_swaps, "_256_maximov-MC_r2");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 10 - Nk = 4 - Maximov's mixcolumn - r = 3", widest, 3, 10, 4, false, free_swaps, "_128_maximov-MC_r3");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 12 - Nk = 6 - Maximov's mixcolumn - r = 3", widest, 3, 12, 6, false, free_swaps, "_192_maximov-MC_r3");
+                Estimates.GroverOracle<QAES.SmartWide.GroverOracle>($"widest = {widest} - Nr = 14 - Nk = 8 - Maximov's mixcolumn - r = 3", widest, 3, 14, 8, false, free_swaps, "_256_maximov-MC_r3");
+                widest = true;
+            }
             Console.WriteLine();
         }
     }

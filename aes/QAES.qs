@@ -4,17 +4,32 @@ namespace QAES
 {
     open Microsoft.Quantum.Intrinsic;
     open QUtilities;
+    open Microsoft.Quantum.Arrays;
 
-    operation ByteSub(input_state: Qubit[][], ancilla: Qubit[][], costing: Bool) : Unit
+
+
+    function ParitionByteSubAncilla(qubits: Qubit[]) : Qubit[][][] {
+        let a = Most(Partitioned([129*4, size = 4], qubits));
+        return Mapped(PartitionSubByteAncilla(_), a);
+    }
+
+    operation ByteSub(input_state: Qubit[][], ancilla: Qubit[][], byteSubAnc: Qubit[], costing: Bool) : Unit
     {
         body (...)
         {
+            let ancLength = Length(byteSubAnc)/16;
+            let byteSubAncArray1 = Most(Partitioned([ancLength*4, size=4], byteSubAnc));
+            let byteSubAncArray = Mapped(Partitioned([ancLength, size=4], _), byteSubAncArray1);
             for i in 0..3
             {
                 for j in 0..3
                 {
                     // GLRS16.SBox(input_state[j][(i*8)..((i+1)*8-1)], ancilla[j][(i*8)..((i+1)*8-1)], costing);
-                    BoyarPeralta11.SBox(input_state[j][(i*8)..((i+1)*8-1)], ancilla[j][(i*8)..((i+1)*8-1)], costing);
+                    BoyarPeralta11.SBox(
+                        input_state[j][(i*8)..((i+1)*8-1)], 
+                        ancilla[j][(i*8)..((i+1)*8-1)], 
+                        byteSubAncArray[j][i],
+                    costing);
                     // BoyarPeralta11.AdjointInverseSBox(input_state[j][(i*8)..((i+1)*8-1)], ancilla[j][(i*8)..((i+1)*8-1)], costing);
                 }
             }
@@ -22,14 +37,24 @@ namespace QAES
         adjoint auto;
     }
 
-    operation SubByte(input_word: Qubit[], ancilla: Qubit[], costing: Bool) : Unit
+    function PartitionSubByteAncilla(qubits: Qubit[]) : Qubit[][] {
+        return Most(Partitioned([129,size=4],qubits));
+    }
+    operation SubByte(input_word: Qubit[], ancilla: Qubit[], subByteAnc: Qubit[], costing: Bool) : Unit
     {
         body (...)
         {
+            let ancLength = Length(subByteAnc)/4;
+            let subByteAncArray = Most(Partitioned([ancLength, size=4], subByteAnc));
+            // Allocate all ancilla beforehand
             for i in 0..3
             {
                 // GLRS16.SBox(input_word[(i*8)..((i+1)*8-1)], ancilla[(i*8)..((i+1)*8-1)], costing);
-                BoyarPeralta11.SBox(input_word[(i*8)..((i+1)*8-1)], ancilla[(i*8)..((i+1)*8-1)], costing);
+                BoyarPeralta11.SBox(
+                    input_word[(i*8)..((i+1)*8-1)], 
+                    ancilla[(i*8)..((i+1)*8-1)], 
+                    subByteAncArray[i],
+                    costing);
                 // BoyarPeralta11.AdjointInverseSBox(input_word[(i*8)..((i+1)*8-1)], ancilla[(i*8)..((i+1)*8-1)], costing);
             }
         }
@@ -40,6 +65,7 @@ namespace QAES
 namespace QAES.Widest
 {
     open Microsoft.Quantum.Intrinsic;
+    open Microsoft.Quantum.Arrays;
     open QUtilities;
     operation AddRoundKey(state: Qubit[][], round_key: Qubit[]) : Unit
     {
@@ -56,12 +82,68 @@ namespace QAES.Widest
         adjoint auto;
     }
 
+
+    function NumberOfKeyExpansionSubBytes(Nr: Int, Nk: Int) : Int {
+        mutable counter = 0;
+        for i in Nk..(4*(Nr+1) - 1) {
+            if (i % Nk != 0 and (i % Nk != 4 or Nk <= 6))
+                {
+                   
+                }
+                else
+                {
+                    if (i % Nk == 0) // note this branch is executed less often when Nk = 6 than when Nk = 4, lowering the overal cost
+                    {
+
+                        set counter = counter + 1;
+
+                    }
+                    elif (Nk > 6 and i % Nk == 4)
+                    {
+                        set counter = counter + 1;    
+                    }
+                }
+        }
+        return counter;
+    }
+
+    // Partitions qubit array in an accessible way
+    function PartitionKeyExpansionSubBytes(Nr: Int, Nk: Int, qubits : Qubit[]) : Qubit[][] {
+        mutable result = [[], size = 4*(Nr+1)];
+        mutable counter = 0;
+        let nSBAnc = 4*BoyarPeralta11.SBoxAncCount();
+        for i in Nk..(4*(Nr+1) - 1) {
+            if (i % Nk != 0 and (i % Nk != 4 or Nk <= 6))
+                {
+                   
+                }
+                else
+                {
+                    if (i % Nk == 0) // note this branch is executed less often when Nk = 6 than when Nk = 4, lowering the overal cost
+                    {
+
+                        set result w/= i <- qubits[counter*nSBAnc..(counter+1)*nSBAnc - 1];
+                        set counter = counter + 1;
+
+                    }
+                    elif (Nk > 6 and i % Nk == 4)
+                    {
+                        // W[i] = SubByte(W[i-1]);
+                        set result w/= i <- qubits[counter*nSBAnc..(counter+1)*nSBAnc - 1];
+                        set counter = counter + 1;    
+                    }
+                }
+        }
+        return result;
+    }
+
     // WIDE version, does expand the whole key at the beginning
     // assumes the key is set to Zero, except for the first 4 * Nk bytes
-    operation KeyExpansion(key: Qubit[], Nr: Int, Nk: Int, costing: Bool) : Unit
+    operation KeyExpansion(key: Qubit[], Nr: Int, Nk: Int, subByteAncAll: Qubit[], costing: Bool) : Unit
     {
         body (...)
         {
+            // let subByteAnc = PartitionKeyExpansionSubBytes(Nr, Nk, subByteAncAll);
             // First stage of exapnsion is copying the AES key into the expanded key
             // this is unneded, we just allocate qubits for the whole expanded key
             // and load the block key in the first registers.
@@ -92,7 +174,7 @@ namespace QAES.Widest
 
                         // W[i] = SubByte(RotByte(W[i-1]))
                         QAES.InPlace.RotByte(key[((i-1)*32 + 0)..((i-1)*32 + 31)], costing);
-                        QAES.SubByte(key[((i-1)*32 + 0)..((i-1)*32 + 31)], key[(i*32)..((i+1)*32-1)], costing);
+                        QAES.SubByte(key[((i-1)*32 + 0)..((i-1)*32 + 31)], key[(i*32)..((i+1)*32-1)], [], costing);
                         (Adjoint QAES.InPlace.RotByte)(key[((i-1)*32 + 0)..((i-1)*32 + 31)], costing);
 
                         // W[i] ^^^= Rcon[i/Nk]; where uint8_t Rcon[11] = { 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36 };
@@ -121,7 +203,7 @@ namespace QAES.Widest
                     elif (Nk > 6 and i % Nk == 4)
                     {
                         // W[i] = SubByte(W[i-1]);
-                        QAES.SubByte(key[(i-1)*32..((i)*32-1)], key[i*32..((i+1)*32-1)], costing);
+                        QAES.SubByte(key[(i-1)*32..((i)*32-1)], key[i*32..((i+1)*32-1)], [], costing);
                     }
                 }
 
@@ -136,11 +218,11 @@ namespace QAES.Widest
     }
 
     // round values start from 1 to Nr-1, since the final round Nr has a different shape
-    operation Round(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], round: Int, costing: Bool) : Unit
+    operation Round(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], byteSubAnc: Qubit[], round: Int, costing: Bool) : Unit
     {
         body (...)
         {
-            QAES.ByteSub(in_state, out_state, costing);
+            QAES.ByteSub(in_state, out_state, byteSubAnc, costing);
             QAES.InPlace.ShiftRow(out_state, costing);
             QAES.InPlace.MixColumn(out_state, costing);
             AddRoundKey(out_state, key[(4*(round)*32)..(4*(round+1)*32-1)]);
@@ -148,11 +230,11 @@ namespace QAES.Widest
         adjoint auto;
     }
 
-    operation FinalRound(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], Nr: Int, costing: Bool) : Unit
+    operation FinalRound(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], byteSubAnc: Qubit[], Nr: Int, costing: Bool) : Unit
     {
         body (...)
         {
-            QAES.ByteSub(in_state, out_state, costing);
+            QAES.ByteSub(in_state, out_state, byteSubAnc, costing);
             QAES.InPlace.ShiftRow(out_state, costing);
             AddRoundKey(out_state, key[(4*(Nr)*32)..(4*(Nr+1)*32-1)]);
         }
@@ -163,11 +245,13 @@ namespace QAES.Widest
     // WIDE version
     // assumes the expanded_key is set to Zero, except for the first 4 * Nk bytes
     // assumes the state is set to Zero, except for the first 4 words containing the message
-    operation ForwardRijndael(expanded_key: Qubit[], state: Qubit[], ciphertext: Qubit[], Nr: Int, Nk: Int, costing: Bool) : Unit
+    operation ForwardRijndael(expanded_key: Qubit[], state: Qubit[], ciphertext: Qubit[], subByteAnc: Qubit[], byteSubAncAll : Qubit[],  Nr: Int, Nk: Int, costing: Bool) : Unit
     {
         body (...)
         {
-            KeyExpansion(expanded_key, Nr, Nk, costing);
+            let nBSAnc = 4*4*BoyarPeralta11.SBoxAncCount();
+            let byteSubAnc = Partitioned([nBSAnc, size=Nr], byteSubAncAll);
+            KeyExpansion(expanded_key, Nr, Nk, subByteAnc, costing);
 
             // "round 0"
             AddRoundKey([
@@ -190,7 +274,7 @@ namespace QAES.Widest
                     state[(4*32*i + 1*32)..(4*32*i + 2*32 - 1)],
                     state[(4*32*i + 2*32)..(4*32*i + 3*32 - 1)],
                     state[(4*32*i + 3*32)..(4*32*i + 4*32 - 1)]
-                ], expanded_key, i, costing);
+                ], expanded_key, byteSubAnc[i], i, costing);
             }
 
             // final round
@@ -204,7 +288,7 @@ namespace QAES.Widest
                     state[(4*32*Nr + 1*32)..(4*32*Nr + 2*32 - 1)],
                     state[(4*32*Nr + 2*32)..(4*32*Nr + 3*32 - 1)],
                     state[(4*32*Nr + 3*32)..(4*32*Nr + 4*32 - 1)]
-                ], expanded_key, Nr, costing);
+                ], expanded_key, byteSubAnc[Nr-1], Nr, costing);
         }
         adjoint auto;
     }
@@ -213,20 +297,56 @@ namespace QAES.Widest
     {
         body (...)
         {
-            ForwardRijndael(expanded_key, state, ciphertext, Nr, Nk, costing);
+            let nSBAnc = 4*BoyarPeralta11.SBoxAncCount();
+            let nBSAnc = 4*4*BoyarPeralta11.SBoxAncCount();
+            let nBSAncAll = Nr*nBSAnc;
+            let nSBAncAll = NumberOfKeyExpansionSubBytes(Nr, Nk)*nSBAnc;
+            use (sbAncAll, bSAncAll) = (Qubit[nSBAncAll], Qubit[nBSAncAll]) {
+                // use (sbAnc2, bSAncAll2) = (Qubit[nSBAnc], Qubit[nBSAncAll]) {
+                    ForwardRijndael(expanded_key, state, ciphertext, sbAncAll, bSAncAll, Nr, Nk, costing);
 
-            // copy resulting ciphertext out
-            for j in 0..3
-            {
-                CNOTBytes(state[(4*32*Nr + j*32)..(4*32*Nr + j*32 + 7)], ciphertext[(j*32 + 0)..(j*32 + 7)]);
-                CNOTBytes(state[(4*32*Nr + j*32 + 8)..(4*32*Nr + j*32 + 15)], ciphertext[(j*32 + 8)..(j*32 + 15)]);
-                CNOTBytes(state[(4*32*Nr + j*32 + 16)..(4*32*Nr + j*32 + 23)], ciphertext[(j*32 + 16)..(j*32 + 23)]);
-                CNOTBytes(state[(4*32*Nr + j*32 + 24)..(4*32*Nr + j*32 + 31)], ciphertext[(j*32 + 24)..(j*32 + 31)]);
+                    // copy resulting ciphertext out
+                    for j in 0..3
+                    {
+                        CNOTBytes(state[(4*32*Nr + j*32)..(4*32*Nr + j*32 + 7)], ciphertext[(j*32 + 0)..(j*32 + 7)]);
+                        CNOTBytes(state[(4*32*Nr + j*32 + 8)..(4*32*Nr + j*32 + 15)], ciphertext[(j*32 + 8)..(j*32 + 15)]);
+                        CNOTBytes(state[(4*32*Nr + j*32 + 16)..(4*32*Nr + j*32 + 23)], ciphertext[(j*32 + 16)..(j*32 + 23)]);
+                        CNOTBytes(state[(4*32*Nr + j*32 + 24)..(4*32*Nr + j*32 + 31)], ciphertext[(j*32 + 24)..(j*32 + 31)]);
+                    }
+
+                    (Adjoint ForwardRijndael)(expanded_key, state, ciphertext, sbAncAll, bSAncAll, Nr, Nk, costing);
+                // }
             }
-
-            (Adjoint ForwardRijndael)(expanded_key, state, ciphertext, Nr, Nk, costing);
         }
         adjoint auto;
+    }
+
+    operation GroverOracle(key_superposition: Qubit[], success: Qubit, plaintext: Qubit[], target_ciphertext: Bool[], Nr: Int, Nk: Int, costing: Bool) : Unit
+    {
+        body (...)
+        {
+            // (state, expanded_key, ciphertext) = ( Qubit[4*32*(Nr+1)], Qubit[4*32*(Nr+1)], Qubit[4*32])
+            // (key, success, plaintext) = (Qubit[Nk*32], Qubit(), Qubit[128*pairs])
+
+
+            use (other_keys, other_state) = (Qubit[4*32*(Nr+1) - Nk*32], Qubit[4*32*(Nr+1) - 128])
+            {
+                
+                let nSBAnc = 4*BoyarPeralta11.SBoxAncCount();
+                let nBSAnc = 4*4*BoyarPeralta11.SBoxAncCount();
+                let nBSAncAll = Nr*nBSAnc;
+                let nSBAncAll = NumberOfKeyExpansionSubBytes(Nr, Nk)*nSBAnc;
+                use (sbAncAll, bSAncAll) = (Qubit[nSBAncAll], Qubit[nBSAncAll]) {
+                    let state = plaintext + other_state;
+                    ForwardRijndael(key_superposition + other_keys, state, [], sbAncAll, bSAncAll, Nr, Nk, costing);
+                    let ciphertext = state[4*32*Nr..4*32*Nr+128-1];
+
+                    CompareQubitstring(success, ciphertext, target_ciphertext, costing);
+
+                    (Adjoint ForwardRijndael)(key_superposition + other_keys, state, [], sbAncAll, bSAncAll, Nr, Nk, costing);
+                }
+            }
+        }
     }
 }
 
@@ -234,14 +354,15 @@ namespace QAES.SmartWide
 {
     open Microsoft.Quantum.Intrinsic;
     open Microsoft.Quantum.Canon;
+    open Microsoft.Quantum.Arrays;
     open QUtilities;
 
     // round values start from 1 to Nr-1, since the final round Nr has a different shape
-    operation Round(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], round: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Unit
+    operation Round(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], subByteAnc: Qubit[], byteSubAnc: Qubit[], round: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Unit
     {
         body (...)
         {
-            QAES.ByteSub(in_state, out_state[0..3], costing);
+            QAES.ByteSub(in_state, out_state[0..3], byteSubAnc, costing);
             QAES.InPlace.ShiftRow(out_state, costing);
             if (in_place_mixcolumn)
             {
@@ -255,7 +376,7 @@ namespace QAES.SmartWide
             if (Nk == 4)
             {
                 // AES128
-                QAES.InPlace.KeyExpansion(key, round, Nk, 0, Nk-1, costing);
+                QAES.InPlace.KeyExpansion(key, round, Nk, 0, Nk-1, subByteAnc, costing);
                 QAES.Widest.AddRoundKey(out_state[(0 + (in_place_mixcolumn ? 0 | 4))..(3 + (in_place_mixcolumn ? 0 | 4))], key);
             }
             elif (Nk == 6)
@@ -267,9 +388,9 @@ namespace QAES.SmartWide
                     let key_round = (round/3) * 2 + 1;
                     if (round > 1)
                     {
-                        QAES.InPlace.KeyExpansion(key, key_round, Nk, 2*Nk/3, Nk-1, costing);
+                        QAES.InPlace.KeyExpansion(key, key_round, Nk, 2*Nk/3, Nk-1, subByteAnc, costing);
                     }
-                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, 1, costing);
+                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, 1, subByteAnc, costing);
                     CNOTnBits(key[4*32..(5*32-1)], out_state[0 + (in_place_mixcolumn ? 0 | 4)], 32);
                     CNOTnBits(key[5*32..(6*32-1)], out_state[1 + (in_place_mixcolumn ? 0 | 4)], 32);
                     CNOTnBits(key[0*32..(1*32-1)], out_state[2 + (in_place_mixcolumn ? 0 | 4)], 32);
@@ -278,13 +399,13 @@ namespace QAES.SmartWide
                 elif (round % 3 == 2)
                 {
                     let key_round = (round/3) * 2 + 1;
-                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 2, Nk-1, costing);
+                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 2, Nk-1, subByteAnc, costing);
                     QAES.Widest.AddRoundKey(out_state[(0 + (in_place_mixcolumn ? 0 | 4))..(3 + (in_place_mixcolumn ? 0 | 4))], key[2*32..(6*32-1)]);
                 }
                 else
                 {
                     let key_round = (round/3) * 2;
-                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, 2*Nk/3-1, costing);
+                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, 2*Nk/3-1, subByteAnc, costing);
                     QAES.Widest.AddRoundKey(out_state[(0 + (in_place_mixcolumn ? 0 | 4))..(3 + (in_place_mixcolumn ? 0 | 4))], key[0*32..(4*32-1)]);
                 }
             }
@@ -294,7 +415,7 @@ namespace QAES.SmartWide
                 if (round % 2 == 0)
                 {
                     let key_round = round/2;
-                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, Nk/2-1, costing);
+                    QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, Nk/2-1, subByteAnc, costing);
                     QAES.Widest.AddRoundKey(out_state[(0 + (in_place_mixcolumn ? 0 | 4))..(3 + (in_place_mixcolumn ? 0 | 4))], key[0*32..(4*32-1)]);
                 }
                 else
@@ -302,7 +423,7 @@ namespace QAES.SmartWide
                     if (round > 2)
                     {
                         let key_round = round/2;
-                        QAES.InPlace.KeyExpansion(key, key_round, Nk, Nk/2, Nk-1, costing);
+                        QAES.InPlace.KeyExpansion(key, key_round, Nk, Nk/2, Nk-1, subByteAnc, costing);
                     }
                     QAES.Widest.AddRoundKey(out_state[(0 + (in_place_mixcolumn ? 0 | 4))..(3 + (in_place_mixcolumn ? 0 | 4))], key[4*32..(8*32-1)]);
                 }
@@ -311,18 +432,18 @@ namespace QAES.SmartWide
         adjoint auto;
     }
 
-    operation FinalRound(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], round: Int, Nk: Int, costing: Bool) : Unit
+    operation FinalRound(in_state: Qubit[][], out_state: Qubit[][], key: Qubit[], subByteAnc: Qubit[], byteSubAnc: Qubit[], round: Int, Nk: Int, costing: Bool) : Unit
     {
         body (...)
         {
-            QAES.ByteSub(in_state, out_state, costing);
+            QAES.ByteSub(in_state, out_state, byteSubAnc, costing);
             QAES.InPlace.ShiftRow(out_state, costing);
             if (Nk == 4)
             {
                 // AES128
                 // Nk == Nb, so can simply run a round of key expansion
                 // for every round of AES
-                QAES.InPlace.KeyExpansion(key, round, Nk, 0, Nk-1, costing);
+                QAES.InPlace.KeyExpansion(key, round, Nk, 0, Nk-1, subByteAnc, costing);
                 QAES.Widest.AddRoundKey(out_state, key);
             }
             elif (Nk == 6)
@@ -330,7 +451,7 @@ namespace QAES.SmartWide
                 // AES192
                 let key_round = (round/3) * 2;
                 // note, need only first 4 words of last key round
-                QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, Nk-3, costing);
+                QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, Nk-3, subByteAnc,  costing);
                 QAES.Widest.AddRoundKey(out_state, key[0*32..(4*32-1)]);
             }
             elif (Nk == 8)
@@ -338,104 +459,201 @@ namespace QAES.SmartWide
                 // AES256
                 // note, need only first 4 words of last key round
                 let key_round = round/2;
-                QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, Nk/2-1, costing);
+                QAES.InPlace.KeyExpansion(key, key_round, Nk, 0, Nk/2-1, subByteAnc, costing);
                 QAES.Widest.AddRoundKey(out_state, key[0*32..(4*32-1)]);
             }
         }
         adjoint auto;
     }
 
-    operation ForwardRijndael(key: Qubit[], state: Qubit[], Nr: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Unit
-    {
-        body (...)
-        {
-            // "round 0"
-            QAES.Widest.AddRoundKey([
-                state[(0*32)..(1*32-1)],
-                state[(1*32)..(2*32-1)],
-                state[(2*32)..(3*32-1)],
-                state[(3*32)..(4*32-1)]
-            ], key);
-
-            for i in 1..(Nr-1)
-            {
-                // round i \in [1..Nr-1]
-                Round(in_place_mixcolumn ? [
-                    state[(4*32*(i-1) + 0*32)..(4*32*(i-1) + 1*32 - 1)],
-                    state[(4*32*(i-1) + 1*32)..(4*32*(i-1) + 2*32 - 1)],
-                    state[(4*32*(i-1) + 2*32)..(4*32*(i-1) + 3*32 - 1)],
-                    state[(4*32*(i-1) + 3*32)..(4*32*(i-1) + 4*32 - 1)]
-                ] | [
-                    state[(8*32*(i-1) + 0*32)..(8*32*(i-1) + 1*32 - 1)],
-                    state[(8*32*(i-1) + 1*32)..(8*32*(i-1) + 2*32 - 1)],
-                    state[(8*32*(i-1) + 2*32)..(8*32*(i-1) + 3*32 - 1)],
-                    state[(8*32*(i-1) + 3*32)..(8*32*(i-1) + 4*32 - 1)]
-                ], in_place_mixcolumn ? [
-                    state[(4*32*i + 0*32)..(4*32*i + 1*32 - 1)],
-                    state[(4*32*i + 1*32)..(4*32*i + 2*32 - 1)],
-                    state[(4*32*i + 2*32)..(4*32*i + 3*32 - 1)],
-                    state[(4*32*i + 3*32)..(4*32*i + 4*32 - 1)]
-                ] | [
-                    state[(8*32*(i-1) +  4*32)..(8*32*(i-1) +  5*32 - 1)],
-                    state[(8*32*(i-1) +  5*32)..(8*32*(i-1) +  6*32 - 1)],
-                    state[(8*32*(i-1) +  6*32)..(8*32*(i-1) +  7*32 - 1)],
-                    state[(8*32*(i-1) +  7*32)..(8*32*(i-1) +  8*32 - 1)],
-                    state[(8*32*(i-1) +  8*32)..(8*32*(i-1) +  9*32 - 1)],
-                    state[(8*32*(i-1) +  9*32)..(8*32*(i-1) + 10*32 - 1)],
-                    state[(8*32*(i-1) + 10*32)..(8*32*(i-1) + 11*32 - 1)],
-                    state[(8*32*(i-1) + 11*32)..(8*32*(i-1) + 12*32 - 1)]
-                ], key, i, Nk, in_place_mixcolumn, costing);
+    function RijndaelByteSubAncillaArranged(Nr: Int, Nk: Int, ancilla: Qubit[], widest: Bool) : Qubit[][] {
+        if Nr == 10{ // AES-128
+            return [ancilla, size = Nr];
+        } elif Nr == 12 { // AES-192
+            if widest {
+                let nBSAnc = 4*4*BoyarPeralta11.SBoxAncCount();
+                let pair = [ancilla[0..nBSAnc-1],ancilla[nBSAnc..2*nBSAnc-1]];
+                return Flattened([pair, size = Nr/2]);
+            } else {
+                return [ancilla, size = Nr];
             }
+            
+        } else { // AES-256
+            if widest {
+                let nBSAnc = 4*4*BoyarPeralta11.SBoxAncCount();
+                let pair = [ancilla[0..nBSAnc-1],ancilla[nBSAnc..2*nBSAnc-1]];
+                return Flattened([pair, size = Nr/2]);
+            } else {
+                return [ancilla, size = Nr];
+            }
+        }
+    }
 
-            // final round
-            FinalRound(in_place_mixcolumn ? [
-                    state[(4*32*(Nr-1) + 0*32)..(4*32*(Nr-1) + 1*32 - 1)],
-                    state[(4*32*(Nr-1) + 1*32)..(4*32*(Nr-1) + 2*32 - 1)],
-                    state[(4*32*(Nr-1) + 2*32)..(4*32*(Nr-1) + 3*32 - 1)],
-                    state[(4*32*(Nr-1) + 3*32)..(4*32*(Nr-1) + 4*32 - 1)]
-                ] | [
-                    state[(8*32*(Nr-1) + 0*32)..(8*32*(Nr-1) + 1*32 - 1)],
-                    state[(8*32*(Nr-1) + 1*32)..(8*32*(Nr-1) + 2*32 - 1)],
-                    state[(8*32*(Nr-1) + 2*32)..(8*32*(Nr-1) + 3*32 - 1)],
-                    state[(8*32*(Nr-1) + 3*32)..(8*32*(Nr-1) + 4*32 - 1)]
-                ], in_place_mixcolumn ? [
-                    state[(4*32*Nr + 0*32)..(4*32*Nr + 1*32 - 1)],
-                    state[(4*32*Nr + 1*32)..(4*32*Nr + 2*32 - 1)],
-                    state[(4*32*Nr + 2*32)..(4*32*Nr + 3*32 - 1)],
-                    state[(4*32*Nr + 3*32)..(4*32*Nr + 4*32 - 1)]
-                ] | [
-                    state[(8*32*(Nr-1) + 4*32)..(8*32*(Nr-1) + 5*32 - 1)],
-                    state[(8*32*(Nr-1) + 5*32)..(8*32*(Nr-1) + 6*32 - 1)],
-                    state[(8*32*(Nr-1) + 6*32)..(8*32*(Nr-1) + 7*32 - 1)],
-                    state[(8*32*(Nr-1) + 7*32)..(8*32*(Nr-1) + 8*32 - 1)]
-                ],
-                key, Nr, Nk, costing
-            );
+    function NumRijndaelByteSubAncilla(Nr: Int, Nk: Int, widest: Bool) : Int {
+        if Nr == 10 { // AES-128
+            return 4*4*BoyarPeralta11.SBoxAncCount();
+        } elif Nr == 12 { // AES-192
+            return (widest ? 2 | 1)*4*4*BoyarPeralta11.SBoxAncCount();
+        } else { // AES-256
+            return (widest ? 2 | 1)*4*4*BoyarPeralta11.SBoxAncCount();
+        }
+    }
+
+    function NumRijndaelSubBytesAncilla(Nr: Int, Nk: Int, widest: Bool) : Int {
+        if Nk == 8 {
+            return (widest ? 2 | 1)*4*BoyarPeralta11.SBoxAncCount();
+        } elif Nk == 6 { 
+            return (widest ? 2 | 1)*4*BoyarPeralta11.SBoxAncCount();
+        }else {
+            return 4*BoyarPeralta11.SBoxAncCount();
+        }
+    }
+
+    function RijndaelSubByteAncillaArranged(Nr : Int, Nk: Int, ancilla: Qubit[], widest: Bool): Qubit[][] {
+        if Nk == 8 {
+            if widest {
+                return [ancilla, size = Nr];
+                // let nSBAnc = 4*BoyarPeralta11.SBoxAncCount();    
+                // let pair = [ancilla[0..nSBAnc-1],ancilla[nSBAnc..2*nSBAnc-1]];
+                // return Flattened([pair, size = Nr/2]);
+            } else {
+                return [ancilla, size = Nr];
+            }
+        } elif Nk == 6 {
+            if widest {
+                let nSBAnc = 4*BoyarPeralta11.SBoxAncCount();    
+                let pair = Most(Partitioned([nSBAnc, size=2], ancilla));
+                return Flattened([pair, size = Nr/2]);
+            } else {
+                return [ancilla, size=Nr];
+            }
+        } else {
+            return [ancilla, size=Nr];
+        }
+    }
+
+
+    operation ForwardRijndael(key: Qubit[], state: Qubit[], Nr: Int, Nk: Int, in_place_mixcolumn: Bool, ancilla: Qubit[], widest: Bool, costing: Bool) : Unit
+    {
+        body (...)
+        {
+            let nBSAnc = NumRijndaelByteSubAncilla(Nr, Nk, widest);
+            let nSBAnc = NumRijndaelSubBytesAncilla(Nr, Nk, widest);
+            if Length(ancilla) < nBSAnc + nSBAnc {
+                Message("Warning: not enough ancilla passed to Rijndael");
+                let nExtra = nBSAnc + nSBAnc - Length(ancilla);
+                use extraAnc = Qubit[nExtra] {
+                    ForwardRijndael(key, state, Nr, Nk, in_place_mixcolumn, ancilla+extraAnc, widest, costing);
+                }
+            } else {
+                let byteSubAnc = RijndaelByteSubAncillaArranged(Nr, Nk, ancilla[0..nBSAnc-1], widest);
+                let subByteAnc = RijndaelSubByteAncillaArranged(Nr, Nk, ancilla[nBSAnc..nBSAnc+nSBAnc-1], widest);
+                // "round 0"
+                QAES.Widest.AddRoundKey([
+                    state[(0*32)..(1*32-1)],
+                    state[(1*32)..(2*32-1)],
+                    state[(2*32)..(3*32-1)],
+                    state[(3*32)..(4*32-1)]
+                ], key);
+
+                for i in 1..(Nr-1)
+                {
+                    // round i \in [1..Nr-1]
+                    Round(in_place_mixcolumn ? [
+                        state[(4*32*(i-1) + 0*32)..(4*32*(i-1) + 1*32 - 1)],
+                        state[(4*32*(i-1) + 1*32)..(4*32*(i-1) + 2*32 - 1)],
+                        state[(4*32*(i-1) + 2*32)..(4*32*(i-1) + 3*32 - 1)],
+                        state[(4*32*(i-1) + 3*32)..(4*32*(i-1) + 4*32 - 1)]
+                    ] | [
+                        state[(8*32*(i-1) + 0*32)..(8*32*(i-1) + 1*32 - 1)],
+                        state[(8*32*(i-1) + 1*32)..(8*32*(i-1) + 2*32 - 1)],
+                        state[(8*32*(i-1) + 2*32)..(8*32*(i-1) + 3*32 - 1)],
+                        state[(8*32*(i-1) + 3*32)..(8*32*(i-1) + 4*32 - 1)]
+                    ], in_place_mixcolumn ? [
+                        state[(4*32*i + 0*32)..(4*32*i + 1*32 - 1)],
+                        state[(4*32*i + 1*32)..(4*32*i + 2*32 - 1)],
+                        state[(4*32*i + 2*32)..(4*32*i + 3*32 - 1)],
+                        state[(4*32*i + 3*32)..(4*32*i + 4*32 - 1)]
+                    ] | [
+                        state[(8*32*(i-1) +  4*32)..(8*32*(i-1) +  5*32 - 1)],
+                        state[(8*32*(i-1) +  5*32)..(8*32*(i-1) +  6*32 - 1)],
+                        state[(8*32*(i-1) +  6*32)..(8*32*(i-1) +  7*32 - 1)],
+                        state[(8*32*(i-1) +  7*32)..(8*32*(i-1) +  8*32 - 1)],
+                        state[(8*32*(i-1) +  8*32)..(8*32*(i-1) +  9*32 - 1)],
+                        state[(8*32*(i-1) +  9*32)..(8*32*(i-1) + 10*32 - 1)],
+                        state[(8*32*(i-1) + 10*32)..(8*32*(i-1) + 11*32 - 1)],
+                        state[(8*32*(i-1) + 11*32)..(8*32*(i-1) + 12*32 - 1)]
+                    ], key, subByteAnc[i-1], byteSubAnc[i-1], i, Nk, in_place_mixcolumn, costing);
+                }
+
+                // final round
+                FinalRound(in_place_mixcolumn ? [
+                        state[(4*32*(Nr-1) + 0*32)..(4*32*(Nr-1) + 1*32 - 1)],
+                        state[(4*32*(Nr-1) + 1*32)..(4*32*(Nr-1) + 2*32 - 1)],
+                        state[(4*32*(Nr-1) + 2*32)..(4*32*(Nr-1) + 3*32 - 1)],
+                        state[(4*32*(Nr-1) + 3*32)..(4*32*(Nr-1) + 4*32 - 1)]
+                    ] | [
+                        state[(8*32*(Nr-1) + 0*32)..(8*32*(Nr-1) + 1*32 - 1)],
+                        state[(8*32*(Nr-1) + 1*32)..(8*32*(Nr-1) + 2*32 - 1)],
+                        state[(8*32*(Nr-1) + 2*32)..(8*32*(Nr-1) + 3*32 - 1)],
+                        state[(8*32*(Nr-1) + 3*32)..(8*32*(Nr-1) + 4*32 - 1)]
+                    ], in_place_mixcolumn ? [
+                        state[(4*32*Nr + 0*32)..(4*32*Nr + 1*32 - 1)],
+                        state[(4*32*Nr + 1*32)..(4*32*Nr + 2*32 - 1)],
+                        state[(4*32*Nr + 2*32)..(4*32*Nr + 3*32 - 1)],
+                        state[(4*32*Nr + 3*32)..(4*32*Nr + 4*32 - 1)]
+                    ] | [
+                        state[(8*32*(Nr-1) + 4*32)..(8*32*(Nr-1) + 5*32 - 1)],
+                        state[(8*32*(Nr-1) + 5*32)..(8*32*(Nr-1) + 6*32 - 1)],
+                        state[(8*32*(Nr-1) + 6*32)..(8*32*(Nr-1) + 7*32 - 1)],
+                        state[(8*32*(Nr-1) + 7*32)..(8*32*(Nr-1) + 8*32 - 1)]
+                    ],
+                    key, subByteAnc[Nr-1], byteSubAnc[Nr-1], Nr, Nk, costing
+                );
+            }
         }
         adjoint auto;
     }
 
-    operation Rijndael(key: Qubit[], state: Qubit[], ciphertext: Qubit[], Nr: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Unit
+    operation Rijndael(key: Qubit[], state: Qubit[], ciphertext: Qubit[], Nr: Int, Nk: Int, in_place_mixcolumn: Bool, widest: Bool, costing: Bool) : Unit
     {
         body (...)
         {
-            ForwardRijndael(key, state, Nr, Nk, in_place_mixcolumn, costing);
+            let nAnc = NumRijndaelByteSubAncilla(Nr, Nk, widest) + NumRijndaelSubBytesAncilla(Nr, Nk, widest);
+            use rijndaelAnc = Qubit[nAnc] {
+                ForwardRijndael(key, state, Nr, Nk, in_place_mixcolumn, rijndaelAnc, widest, costing);
 
-            // copy resulting ciphertext out
-            CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 0*32)..(4*32*Nr + 1*32 - 1)] | state[(8*32*(Nr-1) + 4*32)..(8*32*(Nr-1) + 5*32 - 1)], ciphertext[0..31], 32);
-            CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 1*32)..(4*32*Nr + 2*32 - 1)] | state[(8*32*(Nr-1) + 5*32)..(8*32*(Nr-1) + 6*32 - 1)], ciphertext[32..63], 32);
-            CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 2*32)..(4*32*Nr + 3*32 - 1)] | state[(8*32*(Nr-1) + 6*32)..(8*32*(Nr-1) + 7*32 - 1)], ciphertext[64..95], 32);
-            CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 3*32)..(4*32*Nr + 4*32 - 1)] | state[(8*32*(Nr-1) + 7*32)..(8*32*(Nr-1) + 8*32 - 1)], ciphertext[96..127], 32);
+                // copy resulting ciphertext out
+                CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 0*32)..(4*32*Nr + 1*32 - 1)] | state[(8*32*(Nr-1) + 4*32)..(8*32*(Nr-1) + 5*32 - 1)], ciphertext[0..31], 32);
+                CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 1*32)..(4*32*Nr + 2*32 - 1)] | state[(8*32*(Nr-1) + 5*32)..(8*32*(Nr-1) + 6*32 - 1)], ciphertext[32..63], 32);
+                CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 2*32)..(4*32*Nr + 3*32 - 1)] | state[(8*32*(Nr-1) + 6*32)..(8*32*(Nr-1) + 7*32 - 1)], ciphertext[64..95], 32);
+                CNOTnBits(in_place_mixcolumn ? state[(4*32*Nr + 3*32)..(4*32*Nr + 4*32 - 1)] | state[(8*32*(Nr-1) + 7*32)..(8*32*(Nr-1) + 8*32 - 1)], ciphertext[96..127], 32);
 
-            (Adjoint ForwardRijndael)(key, state, Nr, Nk, in_place_mixcolumn, costing);
+                (Adjoint ForwardRijndael)(key, state, Nr, Nk, in_place_mixcolumn, rijndaelAnc, widest, costing);
+            }
         }
         adjoint auto;
     }
 
-    operation ForwardGroverOracle(other_keys: Qubit[], state_ancillas: Qubit[], key_superposition: Qubit[], success: Qubit, plaintext: Qubit[], target_ciphertext: Bool[], pairs: Int, Nr: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Unit
+    operation ForwardGroverOracle(
+        other_keys: Qubit[], 
+        state_ancillas: Qubit[], 
+        key_superposition: Qubit[], 
+        success: Qubit, 
+        plaintext: Qubit[], 
+        target_ciphertext: Bool[], 
+        pairs: Int, 
+        Nr: Int, 
+        Nk: Int, 
+        in_place_mixcolumn: Bool, 
+        ancilla: Qubit[],
+        widest: Bool, 
+        costing: Bool) : Unit
     {
         body (...)
         {
+            let nAnc = NumRijndaelByteSubAncilla(Nr, Nk, widest) + NumRijndaelSubBytesAncilla(Nr, Nk, widest);
+            let ancArray = Partitioned([nAnc, size=pairs], ancilla);
             // copy loaded key
             for i in 0..(pairs-2)
             {
@@ -447,19 +665,20 @@ namespace QAES.SmartWide
             {
                 let state = plaintext[(i*128)..((i+1)*128-1)] + (in_place_mixcolumn ? state_ancillas[(i*128*Nr)..((i+1)*128*Nr-1)] | state_ancillas[(i*128*(2*Nr-1))..((i+1)*128*(2*Nr-1)-1)]);
                 let key = i == 0 ? key_superposition | other_keys[((i-1)*Nk*32)..(i*Nk*32-1)];
-                ForwardRijndael(key, state, Nr, Nk, in_place_mixcolumn, costing);
+                ForwardRijndael(key, state, Nr, Nk, in_place_mixcolumn, ancArray[i], widest, costing);
             }
         }
         adjoint auto;
     }
 
-    operation GroverOracle(key_superposition: Qubit[], success: Qubit, plaintext: Qubit[], target_ciphertext: Bool[], pairs: Int, Nr: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Unit
+    operation GroverOracle(key_superposition: Qubit[], success: Qubit, plaintext: Qubit[], target_ciphertext: Bool[], pairs: Int, Nr: Int, Nk: Int, in_place_mixcolumn: Bool, widest: Bool, costing: Bool) : Unit
     {
         body (...)
         {
-            use (other_keys, state_ancillas) = (Qubit[32*Nk*(pairs-1)], Qubit[128*(in_place_mixcolumn ? Nr | (2*Nr-1))*pairs])
+            let nAnc = NumRijndaelByteSubAncilla(Nr, Nk, widest) + NumRijndaelSubBytesAncilla(Nr, Nk, widest);
+            use (other_keys, state_ancillas, sBoxAnc) = (Qubit[32*Nk*(pairs-1)], Qubit[128*(in_place_mixcolumn ? Nr | (2*Nr-1))*pairs], Qubit[nAnc*pairs])
             {
-                ForwardGroverOracle(other_keys, state_ancillas, key_superposition, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, costing);
+                ForwardGroverOracle(other_keys, state_ancillas, key_superposition, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, sBoxAnc, widest, costing);
 
                 // debug output
                 // for (i in 0..(Length(target_ciphertext)-1))
@@ -479,7 +698,7 @@ namespace QAES.SmartWide
 
                 CompareQubitstring(success, ciphertext, target_ciphertext, costing);
 
-                (Adjoint ForwardGroverOracle)(other_keys, state_ancillas, key_superposition, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, costing);
+                (Adjoint ForwardGroverOracle)(other_keys, state_ancillas, key_superposition, success, plaintext, target_ciphertext, pairs, Nr, Nk, in_place_mixcolumn, sBoxAnc, widest, costing);
             }
         }
     }
@@ -852,50 +1071,75 @@ namespace QAES.InPlace
         adjoint auto;
     }
 
-    operation KeyExpansion(key: Qubit[], kexp_round: Int, Nk: Int, first_word: Int, last_word: Int, costing: Bool) : Unit
+
+    function KeyExpansionAncilla(Nk: Int, first_word: Int, last_word: Int, subByteAnc: Qubit[]) : Qubit[][] {
+        if (Nk == 8){
+            // If there aren't enough, re-use
+            if Length(subByteAnc) < 8*BoyarPeralta11.SBoxAncCount() {
+                return [subByteAnc[0..4*BoyarPeralta11.SBoxAncCount()-1], size = 2];
+            } else {
+                return [subByteAnc[0..4*BoyarPeralta11.SBoxAncCount()-1],subByteAnc[4*BoyarPeralta11.SBoxAncCount()..Length(subByteAnc)-1]];
+            }
+        } else {
+            return [subByteAnc];
+        }
+    }
+
+    operation KeyExpansion(key: Qubit[], kexp_round: Int, Nk: Int, first_word: Int, last_word: Int, subByteAnc: Qubit[], costing: Bool) : Unit
     {
         body (...)
-        {
-            for i in first_word..last_word
-            {
-                if (i == 0)
-                {
-                    RotByte(key[(32*(Nk-1))..(32*(Nk)-1)], costing);
-                    QAES.SubByte(key[(32*(Nk-1))..(32*(Nk)-1)], key[(32*(0))..(32*(1)-1)], costing);
-                    (Adjoint RotByte)(key[(32*(Nk-1))..(32*(Nk)-1)], costing);
-
-                    // W[i] ^^^= Rcon[i/Nk]; where uint8_t Rcon[11] = { 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36 };
-                    if (kexp_round > 0 and kexp_round < 9)
-                    {
-                        // flip the ((i/Nk)-1)-th bit
-                        X(key[kexp_round - 1]);
-                    }
-                    elif (kexp_round == 9)
-                    {
-                        // >>> bin(0x1b) == '0b00011011'
-                        X(key[0]);
-                        X(key[1]);
-                        X(key[3]);
-                        X(key[4]);
-                    }
-                    elif (kexp_round == 10)
-                    {
-                        // >>> bin(0x36) == '0b00110110'
-                        X(key[1]);
-                        X(key[2]);
-                        X(key[4]);
-                        X(key[5]);
-                    }
+        {   
+            // Add extra qubits as necessary
+            if Length(subByteAnc) < 4*BoyarPeralta11.SBoxAncCount() { //(Nk== 8 ? 8*BoyarPeralta11.SBoxAncCount() | 4*BoyarPeralta11.SBoxAncCount()) {
+                let nExtra = (Nk== 8 ? 8*BoyarPeralta11.SBoxAncCount() | 4*BoyarPeralta11.SBoxAncCount()) - Length(subByteAnc);
+                use extra = Qubit[nExtra] {
+                    KeyExpansion(key, kexp_round, Nk, first_word, last_word, subByteAnc + extra, costing);
                 }
-                else
+            } else {
+                let subByteAncs = KeyExpansionAncilla(Nk, first_word, last_word, subByteAnc);
+                for i in first_word..last_word
                 {
-                    if (Nk == 8 and i == 4)
+                    if (i == 0)
                     {
-                        QAES.SubByte(key[(32*(i-1))..(32*(i)-1)], key[(32*(i))..(32*(i+1)-1)], costing);
+                        RotByte(key[(32*(Nk-1))..(32*(Nk)-1)], costing);
+                        // QAES.SubByte(key[(32*(Nk-1))..(32*(Nk)-1)], key[(32*(0))..(32*(1)-1)], [], costing);
+                        QAES.SubByte(key[(32*(Nk-1))..(32*(Nk)-1)], key[(32*(0))..(32*(1)-1)], subByteAncs[0], costing);
+                        (Adjoint RotByte)(key[(32*(Nk-1))..(32*(Nk)-1)], costing);
+
+                        // W[i] ^^^= Rcon[i/Nk]; where uint8_t Rcon[11] = { 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36 };
+                        if (kexp_round > 0 and kexp_round < 9)
+                        {
+                            // flip the ((i/Nk)-1)-th bit
+                            X(key[kexp_round - 1]);
+                        }
+                        elif (kexp_round == 9)
+                        {
+                            // >>> bin(0x1b) == '0b00011011'
+                            X(key[0]);
+                            X(key[1]);
+                            X(key[3]);
+                            X(key[4]);
+                        }
+                        elif (kexp_round == 10)
+                        {
+                            // >>> bin(0x36) == '0b00110110'
+                            X(key[1]);
+                            X(key[2]);
+                            X(key[4]);
+                            X(key[5]);
+                        }
                     }
                     else
                     {
-                        CNOTnBits(key[(32*(i-1))..(32*(i)-1)], key[(32*(i))..(32*(i+1)-1)], 32);
+                        if (Nk == 8 and i == 4)
+                        {
+                            // QAES.SubByte(key[(32*(i-1))..(32*(i)-1)], key[(32*(i))..(32*(i+1)-1)], [], costing);
+                            QAES.SubByte(key[(32*(i-1))..(32*(i)-1)], key[(32*(i))..(32*(i+1)-1)], subByteAncs[1], costing);
+                        }
+                        else
+                        {
+                            CNOTnBits(key[(32*(i-1))..(32*(i)-1)], key[(32*(i))..(32*(i+1)-1)], 32);
+                        }
                     }
                 }
             }
