@@ -49,6 +49,15 @@ static class Utilities
         return new QArray<Result>(bits);
     }
 
+    public static QArray<Result> BitsToQubits(bool[] vals)
+    {
+        Result[] qubits = new Result[vals.Length];
+        for (int i =0; i < vals.Length; i++){
+            qubits[i] = vals[i] ? Microsoft.Quantum.Simulation.Core.Result.One : Microsoft.Quantum.Simulation.Core.Result.Zero;
+        }
+        return new QArray<Result>(qubits);
+    }
+
     public static void PrintBits(bool[] bits)
     {
         for (int i = 8; i > 0; i--)

@@ -31,6 +31,10 @@ namespace QUtilities
         }
     }
 
+    function SWAPPEDBytes(x : Qubit[], y: Qubit[]) : (Qubit[], Qubit[]) {
+        return (y, x);
+    }
+
     operation SWAPBytes (x: Qubit[], y: Qubit[]) : Unit {
         body (...)
         {
@@ -64,13 +68,36 @@ namespace QUtilities
         adjoint auto;
     }
 
+    function ArraySWAP(x : Qubit[], indicesX: Int[], indicesY: Int[]) : Qubit[] {
+        mutable xNew = x;
+        for i in 0..Length(indicesX) - 1 {
+            set xNew w/= indicesX[i] <- x[indicesY[i]];
+            set xNew w/= indicesY[i] <- x[indicesX[i]];
+        }
+        return xNew;
+    }
+
+    function MultiSWAP(x : Qubit[], y: Qubit[], indicesX: Int[], indicesY: Int[]) : (Qubit[], Qubit[]) {
+        mutable xNew = x;
+        mutable yNew = y;
+        for i in 0..Length(indicesX) - 1 {
+            set xNew w/= indicesX[i] <- y[indicesY[i]];
+            set yNew w/= indicesY[i] <- x[indicesX[i]];
+        }
+        return (xNew, yNew);
+    }
+
+    function REWIRED(x : Qubit[], index1: Int, index2: Int): Qubit[]{
+        mutable newX = x;
+        set newX w/= index1 <- x[index2];
+        set newX w/= index2 <- x[index1];
+        return newX;
+    }
+
     operation REWIRE (x: Qubit, y: Qubit, free: Bool) : Unit {
         body (...)
         {
-            if (not free)
-            {
-                SWAP(x, y);
-            }
+            SWAP(x, y);
         }
         adjoint auto;
     }
@@ -78,10 +105,7 @@ namespace QUtilities
     operation REWIREBytes (x: Qubit[], y: Qubit[], free: Bool) : Unit {
         body (...)
         {
-            if (not free)
-            {
-                SWAPBytes(x, y);
-            }
+            SWAPBytes(x, y);
         }
         adjoint auto;
     }
@@ -147,23 +171,20 @@ namespace QUtilities
         adjoint (...) {
             if (costing) {
                 H(target);
-                AssertMeasurementProbability([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
+                H(control2);
+                AssertMeasurementProbability([PauliZ, size=3], [control1, control2, target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
 
+                // Clumsy hack to escape the measurement-dependency bug
                 if (IsResultOne(Measure([PauliZ, size=3], [control1, control2, target]))) {
-                    // Just do a C-Z? 
-                    // Also no reason to reset the target; that's implied by measurement
-                    CZ(control1, control2);
-
-                    // S(control1);
-                    // S(control2);
-                    // CNOT(control1, control2);
-                    // Adjoint S(control2);
-                    // CNOT(control1, control2);
-                    // X(target);
-                }
+                    CNOT(control1, control2);
+                    H(control2);
+                    X(target);
                 } else {
-                    ccnot(control1, control2, target, [anc], costing);
+                    H(control2);
                 }
+            } else {
+                ccnot(control1, control2, target, [anc], costing);
+            }
         }
     }
 
@@ -192,23 +213,21 @@ namespace QUtilities
         }
         adjoint (...) {
             H(target);
+            H(control2);
             AssertMeasurementProbability([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
 
             // Clumsy hack to escape the measurement-dependency bug
             Block([target, control1, control2]);
-
             if (IsResultOne(Measure([PauliZ, size=3], [control1, control2, target]))) {
-                // Just do a C-Z? 
-                CZ(control1, control2);
-
+                CNOT(control1, control2);
+                H(control2);
                 
-                // S(control1);
-                // S(control2);
-                // CNOT(control1, control2);
-                // Adjoint S(control2);
-                // CNOT(control1, control2);
+
                 X(target);
+            } else {
+                H(control2);
             }
+
         }
     }
 

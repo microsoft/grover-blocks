@@ -193,7 +193,9 @@ namespace BoyarPeralta11
     }
 
 
-
+    // Wrapper function for an SBox
+    // Expects 129 qubits in ancAll, in the zeros state, and returns them to the zeros state
+    // If there are fewer qubits, it will allocate more as needed
     operation SBox (input: Qubit[], output: Qubit[], ancAll: Qubit[], costing: Bool) : Unit {
         body (...){
             if Length(ancAll) < 129 {
@@ -208,6 +210,8 @@ namespace BoyarPeralta11
         adjoint auto;
     }
 
+
+    // Internal Sbox
     operation _SBox (input: Qubit[], output: Qubit[], ancAll: Qubit[], costing: Bool) : Unit
     {
         body (...)

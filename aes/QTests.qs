@@ -8,18 +8,9 @@ namespace QTests.GF256
     open QUtilities;
 
     operation MeasureDepth() : Unit {
-        use qubits = Qubit[5] {
-            H(qubits[0]);
-            T(qubits[0]);
-            // let m = M(qubits[0]);
-            let m = Measure([PauliZ, size= 5], qubits);
-            // Microsoft.Quantum.Diagnostics.AssertMeasurementProbability([PauliZ], [qubits[0]], Zero, 0.5, "", 1e-10);
-
-            if m == One {
-                T(qubits[1]);
-            } else {
-                T(qubits[2]);
-            }
+        use qubits = Qubit[4] {
+            SWAP(qubits[0], qubits[1]);
+            // (Adjoint LPANDWithAux)(qubits[0], qubits[1], qubits[2], qubits[3], true);
         }
     }
 
@@ -293,6 +284,7 @@ namespace QTests.AES
         return res;
     }
 
+
     operation ShiftRow(_state: Result[], costing: Bool) : Result[][]
     {
         mutable res_1 = [Zero, size = 32];
@@ -311,26 +303,26 @@ namespace QTests.AES
                 }
             }
 
-            QAES.InPlace.ShiftRow(state, costing);
+            let shifted_state = QAES.InPlace.ShiftedRow(state);
 
             for i in 0..31
             {
-                set res_1 w/= i <- M(state[0][i]);
+                set res_1 w/= i <- M(shifted_state[0][i]);
             }
 
             for i in 0..31
             {
-                set res_2 w/= i <- M(state[1][i]);
+                set res_2 w/= i <- M(shifted_state[1][i]);
             }
 
             for i in 0..31
             {
-                set res_3 w/= i <- M(state[2][i]);
+                set res_3 w/= i <- M(shifted_state[2][i]);
             }
 
             for i in 0..31
             {
-                set res_4 w/= i <- M(state[3][i]);
+                set res_4 w/= i <- M(shifted_state[3][i]);
             }
 
             // cleanup
@@ -338,7 +330,7 @@ namespace QTests.AES
             {
                 for i in 0..31
                 {
-                    Set(Zero, state[j][i]);
+                    Set(Zero, shifted_state[j][i]);
                 }
             }
         }
@@ -359,9 +351,10 @@ namespace QTests.AES
             if (in_place)
             {
                 QAES.InPlace.MixWord(word, costing);
+                let mixed_word = QAES.InPlace.MixedWord(word);
                 for i in 0..31
                 {
-                    set res w/= i <- M(word[i]);
+                    set res w/= i <- M(mixed_word[i]);
                 }
             }
             else
@@ -407,24 +400,25 @@ namespace QTests.AES
             if (in_place)
             {
                 QAES.InPlace.MixColumn(state, costing);
+                let mixed_state = QAES.InPlace.MixedColumn(state);
                 for i in 0..31
                 {
-                    set res_1 w/= i <- M(state[0][i]);
+                    set res_1 w/= i <- M(mixed_state[0][i]);
                 }
 
                 for i in 0..31
                 {
-                    set res_2 w/= i <- M(state[1][i]);
+                    set res_2 w/= i <- M(mixed_state[1][i]);
                 }
 
                 for i in 0..31
                 {
-                    set res_3 w/= i <- M(state[2][i]);
+                    set res_3 w/= i <- M(mixed_state[2][i]);
                 }
 
                 for i in 0..31
                 {
-                    set res_4 w/= i <- M(state[3][i]);
+                    set res_4 w/= i <- M(mixed_state[3][i]);
                 }
             }
             else
@@ -907,7 +901,7 @@ namespace QTests.AES
     }
 
     // narrower
-    operation SmartWideRijndael(_message: Result[], _key: Result[], Nr: Int, Nk: Int, in_place_mixcolumn: Bool, costing: Bool) : Result[][]
+    operation SmartWideRijndael(_message: Result[], _key: Result[], Nr: Int, Nk: Int, in_place_mixcolumn: Bool, widest: Bool, costing: Bool) : Result[][]
     {
         mutable res_1 = [Zero, size = 32];
         mutable res_2 = [Zero, size = 32];
@@ -931,7 +925,8 @@ namespace QTests.AES
                 }
             }
 
-            QAES.SmartWide.Rijndael(key, state, ciphertext, Nr, Nk, in_place_mixcolumn, false, costing);
+
+            QAES.SmartWide.Rijndael(key, state, ciphertext, Nr, Nk, in_place_mixcolumn, widest, costing);
 
             for i in 0..31
             {

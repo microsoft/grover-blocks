@@ -512,7 +512,7 @@ class Tests:
         assert(res == [True] * trials)
 
     @staticmethod
-    def GroverOracle(smart_wide=True, Nr=10, Nk=4, pairs=1, in_place_mixcolumn=False, widest = False, cost=False):
+    def GroverOracle(smart_wide=True, Nr=10, Nk=4, pairs=1, in_place_mixcolumn=True, widest = False, cost=False):
         """
         TEST:
             >>> Tests.GroverOracle(smart_wide=True, in_place_mixcolumn=False, Nr=10, Nk=4, pairs=1)
@@ -539,6 +539,7 @@ class Tests:
             Testing GroverOracle(smart_wide=True, in_place_mixcolumn=True, Nr=14, Nk=8, pairs=1)
             >>> Tests.GroverOracle(smart_wide=True, in_place_mixcolumn=True, Nr=14, Nk=8, pairs=2)
             Testing GroverOracle(smart_wide=True, in_place_mixcolumn=True, Nr=14, Nk=8, pairs=2)
+
 
         # >>> Tests.GroverOracle(smart_wide=True, in_place_mixcolumn=False, Nr=14, Nk=8, pairs=3)
         # Testing GroverOracle(smart_wide=True, in_place_mixcolumn=False, Nr=14, Nk=8, pairs=3)

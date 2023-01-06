@@ -25,6 +25,7 @@ namespace cswrapper
                 config.TraceGateTimes[PrimitiveOperationsGroups.CNOT] = 1;
                 config.TraceGateTimes[PrimitiveOperationsGroups.Measure] = 1; // count all one and 2 qubit measurements as depth 1
                 config.TraceGateTimes[PrimitiveOperationsGroups.QubitClifford] = 1; // qubit Clifford depth 1
+                config.TraceGateTimes[PrimitiveOperationsGroups.R] = 1; // rotations also get depth 1
             }
             return new ResourcesEstimator(config);
             // return new QCTraceSimulator(config);
@@ -249,32 +250,38 @@ namespace cswrapper
             ProcessSim<Qop>(sim, comment, true);
         }
 
-        public static void Rijndael<Qop>(string comment = "", bool smart_wide = true, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
+        public static void Rijndael<Qop>(string comment = "", bool widest = false, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
         {
+            // var sparseSim = new ToffoliSimulator();
+            // Random rand = new Random();
+            // bool[] randomValues = new bool[128];
+
+            // for (int i = 0; i < 128; i++)
+            // {
+            //     randomValues[i] = rand.Next(2) == 1;
+            // }
+            // QTests.AES.SmartWideRijndael.Run(sparseSim, BitsToQubits(randomValues), nQBits(32 * Nk, true), Nr, Nk, in_place_mixcolumn, widest, false);
+
             var sim = getTraceSimulator(false);
-            if (smart_wide)
-            {
-                var res = QTests.AES.SmartWideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, in_place_mixcolumn, free_swaps).Result;
-            }
-            else
-            {
-                var res = QTests.AES.WideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, true, free_swaps).Result;
-            }
+            var res = QTests.AES.SmartWideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, in_place_mixcolumn, widest, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, false, suffix);
             sim = getTraceSimulator(true);
-            if (smart_wide)
-            {
-                var res = QTests.AES.SmartWideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, in_place_mixcolumn, free_swaps).Result;
-            }
-            else
-            {
-                var res = QTests.AES.WideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, true, free_swaps).Result;
-            }
+            res = QTests.AES.SmartWideRijndael.Run(sim, nQBits(128, false), nQBits(32 * Nk, false), Nr, Nk, in_place_mixcolumn, widest, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, true);
         }
 
         public static void GroverOracle<Qop>(string comment = "", bool widest = false, int pairs = 1, int Nr = 10, int Nk = 4, bool in_place_mixcolumn = true, bool free_swaps = true, string suffix = "")
         {
+            // var sparseSim = new ToffoliSimulator();
+            // Random rand = new Random();
+            // bool[] randomValues = new bool[32*Nk];
+
+            // for (int i = 0; i < 32*Nk; i++)
+            // {
+            //     randomValues[i] = true;//rand.Next(2) == 1;
+            // }
+            // var res = QTests.AES.SmartWideGroverOracle.Run(sparseSim, BitsToQubits(randomValues), nQBits(128*pairs, false), nBits(128*pairs, false), pairs, Nr, Nk, in_place_mixcolumn, widest, false).Result;
+
             var sim = getTraceSimulator(false);
             var res = QTests.AES.SmartWideGroverOracle.Run(sim, nQBits(32*Nk, false), nQBits(128*pairs, false), nBits(128*pairs, false), pairs, Nr, Nk, in_place_mixcolumn, widest, free_swaps).Result;
             ProcessSim<Qop>(sim, comment, false, suffix);
