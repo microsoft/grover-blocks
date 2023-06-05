@@ -512,7 +512,7 @@ class Tests:
         assert(res == [True] * trials)
 
     @staticmethod
-    def GroverOracle(smart_wide=True, Nr=10, Nk=4, pairs=1, in_place_mixcolumn=False, cost=False):
+    def GroverOracle(smart_wide=True, Nr=10, Nk=4, pairs=1, in_place_mixcolumn=True, widest = False, cost=False):
         """
         TEST:
             >>> Tests.GroverOracle(smart_wide=True, in_place_mixcolumn=False, Nr=10, Nk=4, pairs=1)
@@ -539,6 +539,7 @@ class Tests:
             Testing GroverOracle(smart_wide=True, in_place_mixcolumn=True, Nr=14, Nk=8, pairs=1)
             >>> Tests.GroverOracle(smart_wide=True, in_place_mixcolumn=True, Nr=14, Nk=8, pairs=2)
             Testing GroverOracle(smart_wide=True, in_place_mixcolumn=True, Nr=14, Nk=8, pairs=2)
+
 
         # >>> Tests.GroverOracle(smart_wide=True, in_place_mixcolumn=False, Nr=14, Nk=8, pairs=3)
         # Testing GroverOracle(smart_wide=True, in_place_mixcolumn=False, Nr=14, Nk=8, pairs=3)
@@ -580,7 +581,7 @@ class Tests:
             if flip:
                 qkey[0] = 0 if qkey[0] == 1 else 1
 
-            qgrover = GroverOracle.toffoli_simulate(_key=qkey, _plaintexts=qmessage, target_ciphertext=target_ciphertext, pairs=pairs, Nr=Nr, Nk=Nk, in_place_mixcolumn=in_place_mixcolumn, costing=False)
+            qgrover = GroverOracle.toffoli_simulate(_key=qkey, _plaintexts=qmessage, target_ciphertext=target_ciphertext, pairs=pairs, Nr=Nr, Nk=Nk, in_place_mixcolumn=in_place_mixcolumn, widest = widest, costing=False)
             res.append(qgrover == int(not flip))
         assert(res == [True] * trials)
 

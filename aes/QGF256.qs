@@ -18,11 +18,11 @@ namespace QGF256
         body (...)
         {
             // construct e
-            for (i in 0..6)
+            for i in 0..6
             {
-                for (j in (i+1)..7)
+                for j in (i+1)..7
                 {
-                    ccnot(a[j], b[8+i-j], res[i], costing);
+                    ccnot(a[j], b[8+i-j], res[i], [], costing);
                 }
             }
 
@@ -61,11 +61,11 @@ namespace QGF256
             CNOT(res[0], res[1]);
 
             // compute d
-            for (i in 0..7)
+            for i in 0..7
             {
-                for (j in 0..i)
+                for j in 0..i
                 {
-                    ccnot(a[j], b[i-j], res[i], costing);
+                    ccnot(a[j], b[i-j], res[i], [], costing);
                 }
             }
         }
@@ -87,40 +87,40 @@ namespace QGF256
         {
             //  construct e
 
-            ccnot(a[1], b[7], res[0], costing);
-            ccnot(a[2], b[6], res[0], costing);
-            ccnot(a[3], b[5], res[0], costing);
-            ccnot(a[4], b[4], res[0], costing);
-            ccnot(a[5], b[3], res[0], costing);
-            ccnot(a[6], b[2], res[0], costing);
-            ccnot(a[7], b[1], res[0], costing);
+            ccnot(a[1], b[7], res[0], [], costing);
+            ccnot(a[2], b[6], res[0], [], costing);
+            ccnot(a[3], b[5], res[0], [], costing);
+            ccnot(a[4], b[4], res[0], [], costing);
+            ccnot(a[5], b[3], res[0], [], costing);
+            ccnot(a[6], b[2], res[0], [], costing);
+            ccnot(a[7], b[1], res[0], [], costing);
 
-            ccnot(a[2], b[7], res[1], costing);
-            ccnot(a[3], b[6], res[1], costing);
-            ccnot(a[4], b[5], res[1], costing);
-            ccnot(a[5], b[4], res[1], costing);
-            ccnot(a[6], b[3], res[1], costing);
-            ccnot(a[7], b[2], res[1], costing);
+            ccnot(a[2], b[7], res[1], [], costing);
+            ccnot(a[3], b[6], res[1], [], costing);
+            ccnot(a[4], b[5], res[1], [], costing);
+            ccnot(a[5], b[4], res[1], [], costing);
+            ccnot(a[6], b[3], res[1], [], costing);
+            ccnot(a[7], b[2], res[1], [], costing);
 
-            ccnot(a[3], b[7], res[2], costing);
-            ccnot(a[4], b[6], res[2], costing);
-            ccnot(a[5], b[5], res[2], costing);
-            ccnot(a[6], b[4], res[2], costing);
-            ccnot(a[7], b[3], res[2], costing);
+            ccnot(a[3], b[7], res[2], [], costing);
+            ccnot(a[4], b[6], res[2], [], costing);
+            ccnot(a[5], b[5], res[2], [], costing);
+            ccnot(a[6], b[4], res[2], [], costing);
+            ccnot(a[7], b[3], res[2], [], costing);
 
-            ccnot(a[4], b[7], res[3], costing);
-            ccnot(a[5], b[6], res[3], costing);
-            ccnot(a[6], b[5], res[3], costing);
-            ccnot(a[7], b[4], res[3], costing);
+            ccnot(a[4], b[7], res[3], [], costing);
+            ccnot(a[5], b[6], res[3], [], costing);
+            ccnot(a[6], b[5], res[3], [], costing);
+            ccnot(a[7], b[4], res[3], [], costing);
 
-            ccnot(a[5], b[7], res[4], costing);
-            ccnot(a[6], b[6], res[4], costing);
-            ccnot(a[7], b[5], res[4], costing);
+            ccnot(a[5], b[7], res[4], [], costing);
+            ccnot(a[6], b[6], res[4], [], costing);
+            ccnot(a[7], b[5], res[4], [], costing);
 
-            ccnot(a[6], b[7], res[5], costing);
-            ccnot(a[7], b[6], res[5], costing);
+            ccnot(a[6], b[7], res[5], [], costing);
+            ccnot(a[7], b[6], res[5], [], costing);
 
-            ccnot(a[7], b[7], res[6], costing);
+            ccnot(a[7], b[7], res[6], [], costing);
 
             // do modulo reduction
             // U
@@ -158,49 +158,49 @@ namespace QGF256
 
             // compute d
 
-            ccnot(a[0], b[7], res[7], costing);
-            ccnot(a[1], b[6], res[7], costing);
-            ccnot(a[2], b[5], res[7], costing);
-            ccnot(a[3], b[4], res[7], costing);
-            ccnot(a[4], b[3], res[7], costing);
-            ccnot(a[5], b[2], res[7], costing);
-            ccnot(a[6], b[1], res[7], costing);
-            ccnot(a[7], b[0], res[7], costing);
+            ccnot(a[0], b[7], res[7], [], costing);
+            ccnot(a[1], b[6], res[7], [], costing);
+            ccnot(a[2], b[5], res[7], [], costing);
+            ccnot(a[3], b[4], res[7], [], costing);
+            ccnot(a[4], b[3], res[7], [], costing);
+            ccnot(a[5], b[2], res[7], [], costing);
+            ccnot(a[6], b[1], res[7], [], costing);
+            ccnot(a[7], b[0], res[7], [], costing);
 
-            ccnot(a[0], b[6], res[6], costing);
-            ccnot(a[1], b[5], res[6], costing);
-            ccnot(a[2], b[4], res[6], costing);
-            ccnot(a[3], b[3], res[6], costing);
-            ccnot(a[4], b[2], res[6], costing);
-            ccnot(a[5], b[1], res[6], costing);
-            ccnot(a[6], b[0], res[6], costing);
+            ccnot(a[0], b[6], res[6], [], costing);
+            ccnot(a[1], b[5], res[6], [], costing);
+            ccnot(a[2], b[4], res[6], [], costing);
+            ccnot(a[3], b[3], res[6], [], costing);
+            ccnot(a[4], b[2], res[6], [], costing);
+            ccnot(a[5], b[1], res[6], [], costing);
+            ccnot(a[6], b[0], res[6], [], costing);
 
-            ccnot(a[0], b[5], res[5], costing);
-            ccnot(a[1], b[4], res[5], costing);
-            ccnot(a[2], b[3], res[5], costing);
-            ccnot(a[3], b[2], res[5], costing);
-            ccnot(a[4], b[1], res[5], costing);
-            ccnot(a[5], b[0], res[5], costing);
+            ccnot(a[0], b[5], res[5], [], costing);
+            ccnot(a[1], b[4], res[5], [], costing);
+            ccnot(a[2], b[3], res[5], [], costing);
+            ccnot(a[3], b[2], res[5], [], costing);
+            ccnot(a[4], b[1], res[5], [], costing);
+            ccnot(a[5], b[0], res[5], [], costing);
 
-            ccnot(a[0], b[4], res[4], costing);
-            ccnot(a[1], b[3], res[4], costing);
-            ccnot(a[2], b[2], res[4], costing);
-            ccnot(a[3], b[1], res[4], costing);
-            ccnot(a[4], b[0], res[4], costing);
+            ccnot(a[0], b[4], res[4], [], costing);
+            ccnot(a[1], b[3], res[4], [], costing);
+            ccnot(a[2], b[2], res[4], [], costing);
+            ccnot(a[3], b[1], res[4], [], costing);
+            ccnot(a[4], b[0], res[4], [], costing);
 
-            ccnot(a[0], b[3], res[3], costing);
-            ccnot(a[1], b[2], res[3], costing);
-            ccnot(a[2], b[1], res[3], costing);
-            ccnot(a[3], b[0], res[3], costing);
+            ccnot(a[0], b[3], res[3], [], costing);
+            ccnot(a[1], b[2], res[3], [], costing);
+            ccnot(a[2], b[1], res[3], [], costing);
+            ccnot(a[3], b[0], res[3], [], costing);
 
-            ccnot(a[0], b[2], res[2], costing);
-            ccnot(a[1], b[1], res[2], costing);
-            ccnot(a[2], b[0], res[2], costing);
+            ccnot(a[0], b[2], res[2], [], costing);
+            ccnot(a[1], b[1], res[2], [], costing);
+            ccnot(a[2], b[0], res[2], [], costing);
 
-            ccnot(a[0], b[1], res[1], costing);
-            ccnot(a[1], b[0], res[1], costing);
+            ccnot(a[0], b[1], res[1], [], costing);
+            ccnot(a[1], b[0], res[1], [], costing);
 
-            ccnot(a[0], b[0], res[0], costing);
+            ccnot(a[0], b[0], res[0], [], costing);
         }
         adjoint auto;
     }
@@ -318,7 +318,7 @@ namespace QGF256
     {
         body (...)
         {
-            using ((c, d, e) = (Qubit[8], Qubit[8], Qubit[8]))
+            use (c, d, e) = (Qubit[8], Qubit[8], Qubit[8])
             {
                 Square(a, b);                                                   // A^2 --> B
                 Mul(a, b, c, costing);                                          // A*B-->C (Gives Beta_2)

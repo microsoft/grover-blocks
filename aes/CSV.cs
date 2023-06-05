@@ -2,145 +2,15 @@
 // Licensed under the MIT license.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Quantum.Simulation.Simulators.QCTraceSimulators;
 
 using FileHelpers; // csv parsing
 
 // Library that deals with making human-friendly the CSV tracer's output
 
-namespace cs
+namespace cswrapper
 {
-    [DelimitedRecord("\t")]
-    [IgnoreFirst(1)]
-    public class DepthCounterCSV
-    {
-        public string Name;
-        public string Variant;
-        public string Caller;
-        public string CallerVariant;
-        public long Count;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal DepthAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal DepthSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal? DepthVariance;
-        public long DepthSum;
-        public long DepthMin;
-        public long DepthMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal StartTimeAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal StartTimeSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))] // [FieldConverter(ConverterKind.Decimal, ".")]
-        public decimal? StartTimeVariance;
-        public long StartTimeSum;
-        public long StartTimeMin;
-        public long StartTimeMax;
-    }
-
-    [DelimitedRecord("\t")]
-    [IgnoreFirst(1)]
-    public class WidthCounterCSV
-    {
-        public string Name;
-        public string Variant;
-        public string Caller;
-        public string CallerVariant;
-        public long Count;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal InputWidthAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal InputWidthSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal InputWidthVariance;
-        public long InputWidthSum;
-        public long InputWidthMin;
-        public long InputWidthMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal ExtraWidthAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal ExtraWidthSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal ExtraWidthVariance;
-        public long ExtraWidthSum;
-        public long ExtraWidthMin;
-        public long ExtraWidthMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal ReturnWidthAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal ReturnWidthSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal ReturnWidthVariance;
-        public long ReturnWidthSum;
-        public long ReturnWidthMin;
-        public long ReturnWidthMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal BorrowedWidthAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal BorrowedWidthSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal BorrowedWidthVariance;
-        public long BorrowedWidthSum;
-        public long BorrowedWidthMin;
-        public long BorrowedWidthMax;
-    }
-
-    [DelimitedRecord("\t")]
-    [IgnoreFirst(1)]
-    public class OperationCounterCSV
-    {
-        public string Name;
-        public string Variant;
-        public string Caller;
-        public string CallerVariant;
-        public long Count;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal CNOTAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal CNOTSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal CNOTVariance;
-        public long CNOTSum;
-        public long CNOTMin;
-        public long CNOTMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal QubitCliffordAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal QubitCliffordSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal QubitCliffordVariance;
-        public long QubitCliffordSum;
-        public long QubitCliffordMin;
-        public long QubitCliffordMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal RAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal RSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal RVariance;
-        public long RSum;
-        public long RMin;
-        public long RMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal MeasureAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal MeasureSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal MeasureVariance;
-        public long MeasureSum;
-        public long MeasureMin;
-        public long MeasureMax;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal TAverage;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal TSecondMoment;
-        [FieldConverter(typeof(QDecimalConverter))]
-        public decimal TVariance;
-        public long TSum;
-        public long TMin;
-        public long TMax;
-}
 
     public class QDecimalConverter : ConverterBase
     {
@@ -152,7 +22,7 @@ namespace cs
             }
             else
             {
-                return Decimal.Parse(from);
+                return Decimal.Parse(from, NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
             }
         }
         public override string FieldToString(object fieldValue)

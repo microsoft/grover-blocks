@@ -8,15 +8,15 @@ using Microsoft.Quantum.Simulation.Simulators;
 
 static class Utilities
 {
-    public static int[] Bits(int x)
+    public static Result[] Bits(int x)
     {
         Trace.Assert(x < 256);
         Trace.Assert(x >= 0);
-        int[] bits = new int[8];
+        Result[] bits = new Result[8];
 
         for (int i = 0; i < 8; i++)
         {
-            bits[i] = (x & (1 << i)) > 0 ? 1 : 0;
+            bits[i] = (x & (1 << i)) > 0 ? Result.One : Result.Zero;
         }
 
         return bits;
@@ -41,12 +41,21 @@ static class Utilities
 
     public static QArray<Result> nQBits(int n, bool val)
     {
-        int[] bits = new int[n];
+        Result[] bits = new Result[n];
         for (int i = 0; i < n; i++)
         {
-            bits[i] = val ? 1 : 0;
+            bits[i] = val ? Microsoft.Quantum.Simulation.Core.Result.One : Microsoft.Quantum.Simulation.Core.Result.Zero;
         }
         return new QArray<Result>(bits);
+    }
+
+    public static QArray<Result> BitsToQubits(bool[] vals)
+    {
+        Result[] qubits = new Result[vals.Length];
+        for (int i =0; i < vals.Length; i++){
+            qubits[i] = vals[i] ? Microsoft.Quantum.Simulation.Core.Result.One : Microsoft.Quantum.Simulation.Core.Result.Zero;
+        }
+        return new QArray<Result>(qubits);
     }
 
     public static void PrintBits(bool[] bits)

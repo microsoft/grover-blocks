@@ -6,16 +6,39 @@ namespace QUtilities
     open Microsoft.Quantum.Canon;
     open Microsoft.Quantum.Diagnostics;
 
+
+    // Blocks operations from parallelizing through this point
+    // i.e., forces mutual dependencies in the call graph
+    // Ruins full depth and full gate counts
+    operation Block(qubits: Qubit[]) : Unit {
+        body (...) {
+            for i in 0..Length(qubits) - 2 {
+                CNOT(qubits[i],qubits[i+1]);
+            }
+            for i in Length(qubits) - 1..(-1)..1 {
+                CNOT(qubits[i],qubits[i-1]);
+            }
+        }
+        controlled (controls, ... ){
+            Block(controls + qubits);
+        }
+        controlled adjoint auto;
+    }
+
     operation Set (desired: Result, q1: Qubit) : Unit {
         if (desired != M(q1)) {
             X(q1);
         }
     }
 
+    function SWAPPEDBytes(x : Qubit[], y: Qubit[]) : (Qubit[], Qubit[]) {
+        return (y, x);
+    }
+
     operation SWAPBytes (x: Qubit[], y: Qubit[]) : Unit {
         body (...)
         {
-            for (i in 0..7)
+            for i in 0..7
             {
                 SWAP(x[i], y[i]);
             }
@@ -26,7 +49,7 @@ namespace QUtilities
     operation CNOTBytes (x: Qubit[], y: Qubit[]) : Unit {
         body (...)
         {
-            for (i in 0..7)
+            for i in 0..7
             {
                 CNOT(x[i], y[i]);
             }
@@ -37,7 +60,7 @@ namespace QUtilities
     operation CNOTnBits (x: Qubit[], y: Qubit[], n: Int) : Unit {
         body (...)
         {
-            for (i in 0..(n-1))
+            for i in 0..(n-1)
             {
                 CNOT(x[i], y[i]);
             }
@@ -45,13 +68,36 @@ namespace QUtilities
         adjoint auto;
     }
 
+    function ArraySWAP(x : Qubit[], indicesX: Int[], indicesY: Int[]) : Qubit[] {
+        mutable xNew = x;
+        for i in 0..Length(indicesX) - 1 {
+            set xNew w/= indicesX[i] <- x[indicesY[i]];
+            set xNew w/= indicesY[i] <- x[indicesX[i]];
+        }
+        return xNew;
+    }
+
+    function MultiSWAP(x : Qubit[], y: Qubit[], indicesX: Int[], indicesY: Int[]) : (Qubit[], Qubit[]) {
+        mutable xNew = x;
+        mutable yNew = y;
+        for i in 0..Length(indicesX) - 1 {
+            set xNew w/= indicesX[i] <- y[indicesY[i]];
+            set yNew w/= indicesY[i] <- x[indicesX[i]];
+        }
+        return (xNew, yNew);
+    }
+
+    function REWIRED(x : Qubit[], index1: Int, index2: Int): Qubit[]{
+        mutable newX = x;
+        set newX w/= index1 <- x[index2];
+        set newX w/= index2 <- x[index1];
+        return newX;
+    }
+
     operation REWIRE (x: Qubit, y: Qubit, free: Bool) : Unit {
         body (...)
         {
-            if (not free)
-            {
-                SWAP(x, y);
-            }
+            SWAP(x, y);
         }
         adjoint auto;
     }
@@ -59,20 +105,17 @@ namespace QUtilities
     operation REWIREBytes (x: Qubit[], y: Qubit[], free: Bool) : Unit {
         body (...)
         {
-            if (not free)
-            {
-                SWAPBytes(x, y);
-            }
+            SWAPBytes(x, y);
         }
         adjoint auto;
     }
 
-    operation ccnot(x: Qubit, y: Qubit, z: Qubit, costing: Bool) : Unit {
+    operation ccnot(x: Qubit, y: Qubit, z: Qubit, anc: Qubit[], costing: Bool) : Unit {
         body (...)
         {
             if (costing)
             {
-                ccnot_T_depth_1(x, y, z);
+                ccnot_T_depth_1(x, y, z, anc);
                 // ccnot_7_t_depth_4(x, y, z);
             }
             else
@@ -108,21 +151,41 @@ namespace QUtilities
         adjoint auto;
     }
 
-    operation LPAND (in_1: Qubit, in_2: Qubit, outp: Qubit, costing: Bool) : Unit
-    {
-        body (...)
-        {
-            if (costing)
-            {
-                AND(in_1, in_2, outp);
-            }
-            else
-            {
-                // ccnot does not assume output bit to be set to Zero!
-                ccnot(in_1, in_2, outp, costing);
+
+    operation LPANDWithAux(control1: Qubit, control2: Qubit, target: Qubit, anc: Qubit, costing: Bool) : Unit {
+        body (...) {
+            if (costing){
+                H(target);
+                LinearPrepare(control1, control2, target, anc);
+                Adjoint T(control1);
+                Adjoint T(control2);
+                T(target);
+                T(anc);
+                Adjoint LinearPrepare(control1, control2, target, anc);
+                H(target);
+                S(target);
+            } else {
+                ccnot(control1, control2, target, [anc], costing);
             }
         }
-        adjoint auto;
+        adjoint (...) {
+            if (costing) {
+                H(target);
+                H(control2);
+                AssertMeasurementProbability([PauliZ, size=3], [control1, control2, target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
+
+                // Clumsy hack to escape the measurement-dependency bug
+                if (IsResultOne(Measure([PauliZ, size=3], [control1, control2, target]))) {
+                    CNOT(control1, control2);
+                    H(control2);
+                    X(target);
+                } else {
+                    H(control2);
+                }
+            } else {
+                ccnot(control1, control2, target, [anc], costing);
+            }
+        }
     }
 
     // --------------------------------------------------------------------------
@@ -136,7 +199,7 @@ namespace QUtilities
 
     operation AND(control1 : Qubit, control2 : Qubit, target : Qubit) : Unit {
         body (...) {
-            using (anc = Qubit()) {
+            use anc = Qubit() {
                 H(target);
                 LinearPrepare(control1, control2, target, anc);
                 Adjoint T(control1);
@@ -150,15 +213,21 @@ namespace QUtilities
         }
         adjoint (...) {
             H(target);
-            AssertProb([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
-            if (IsResultOne(M(target))) {
-                S(control1);
-                S(control2);
+            H(control2);
+            AssertMeasurementProbability([PauliZ], [target], One, 0.5, "Probability of the measurement must be 0.5", 1e-10);
+
+            // Clumsy hack to escape the measurement-dependency bug
+            Block([target, control1, control2]);
+            if (IsResultOne(Measure([PauliZ, size=3], [control1, control2, target]))) {
                 CNOT(control1, control2);
-                Adjoint S(control2);
-                CNOT(control1, control2);
+                H(control2);
+                
+
                 X(target);
+            } else {
+                H(control2);
             }
+
         }
     }
 
@@ -210,14 +279,16 @@ namespace QUtilities
     // /// # See Also
     // /// - For the circuit diagram see Figure 1 on
     // ///   [ Page 3 of arXiv:1210.0974v2 ](https://arxiv.org/pdf/1210.0974v2.pdf#page=2)
-    operation ccnot_T_depth_1 (control1 : Qubit, control2 : Qubit, target : Qubit) : Unit is Adj + Ctl {
-        using (auxillaryRegister = Qubit[4]) {
-
+    operation ccnot_T_depth_1 (control1 : Qubit, control2 : Qubit, target : Qubit, anc: Qubit[]) : Unit is Adj + Ctl {
+        if Length(anc) < 4 {
+            use aux = Qubit[4 - Length(anc)]{
+                ccnot_T_depth_1(control1, control2, target, anc+aux);
+            }
+        } else {
             // apply UVU† where U is outer circuit and V is inner circuit
-            ApplyWithCA(TDepthOneCCNOTOuterCircuit, TDepthOneCCNOTInnerCircuit, auxillaryRegister + [target, control1, control2]);
+            ApplyWithCA(TDepthOneCCNOTOuterCircuit, TDepthOneCCNOTInnerCircuit, anc + [target, control1, control2]);
         }
     }
-
 
     /// # See Also
     /// - Used as a part of @"Microsoft.Quantum.Samples.UnitTesting.TDepthOneCCNOT"
@@ -268,12 +339,12 @@ namespace QUtilities
 	/// ancilla which are not uncomputed.
 	/// If controlQubits has n qubits, then this needs n-2
 	/// blankControlQubits.
-	operation CompressControls(controlQubits : Qubit[], blankControlQubits : Qubit[], output : Qubit, costing: Bool) : Unit {
+	operation CompressControls(controlQubits : Qubit[], blankControlQubits : Qubit[], output : Qubit, andAnc: Qubit[], costing: Bool) : Unit {
 		body (...){
 			let nControls = Length(controlQubits);
 			let nNewControls = Length(blankControlQubits);
 			if (nControls == 2){
-				LPAND(controlQubits[0], controlQubits[1], output, costing);
+				LPANDWithAux(controlQubits[0], controlQubits[1], output, andAnc[0], costing);
 			} else {
 				Fact(nNewControls >= nControls/2, $"Cannot compress {nControls}
 					control qubits to {nNewControls} qubits without more ancilla");
@@ -281,13 +352,13 @@ namespace QUtilities
 					$"Cannot compress {nControls} control qubits into
 					{nNewControls} qubits because there are too few controls");
 				let compressLength = nControls - nNewControls;
-				for (idx in 0.. 2 .. nControls - 2){
-					LPAND(controlQubits[idx], controlQubits[idx + 1], blankControlQubits[idx/2], costing);
+				for idx in 0.. 2 .. nControls - 2{
+					LPANDWithAux(controlQubits[idx], controlQubits[idx + 1], blankControlQubits[idx/2], andAnc[idx/2], costing);
 				}
 				if (nControls % 2 == 0){
-					CompressControls(blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output, costing);
+					CompressControls(blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output,  andAnc[(nControls)/2..Length(andAnc)-1], costing);
 				} else {
-					CompressControls([controlQubits[nControls - 1]] + blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output, costing);
+					CompressControls([controlQubits[nControls - 1]] + blankControlQubits[0.. nControls/2 - 1], blankControlQubits[nControls/2 .. nNewControls - 1], output, andAnc[(nControls-1)/2..Length(andAnc)-1], costing);
 				}
 			}
 		}
@@ -313,13 +384,13 @@ namespace QUtilities
 			let nQubits = Length(xs);
 			if (nQubits == 1){
 				CNOT(xs[0], output);
-			} elif (nQubits == 2){
-				ccnot(xs[0], xs[1], output, costing);
+			// } elif (nQubits == 2){
+			// 	ccnot(xs[0], xs[1], output, costing);
 			} else {
-				using ((spareControls, ancillaOutput) = (Qubit[nQubits - 2], Qubit())){
-					CompressControls(xs, spareControls, ancillaOutput, costing);
+				use (spareControls, ancillaOutput, andAnc) = (Qubit[nQubits - 2], Qubit(), Qubit[nQubits-1]){
+					CompressControls(xs, spareControls, ancillaOutput, andAnc, costing);
 					CNOT(ancillaOutput, output);
-					(Adjoint CompressControls)(xs, spareControls, ancillaOutput, costing);
+					(Adjoint CompressControls)(xs, spareControls, ancillaOutput, andAnc, costing);
 				}
 			}
 		}
@@ -337,7 +408,7 @@ namespace QUtilities
             if (Length(target) == Length(qubitstring))
             {
                 // flip wires expected to be 0 in the target, to allow comparison
-                for (i in 0..(Length(target)-1))
+                for i in 0..(Length(target)-1)
                 {
                     if (target[i] == false)
                     {
@@ -349,7 +420,7 @@ namespace QUtilities
                 TestIfAllOnes(qubitstring, success, costing);
 
                 // undo flipping
-                for (i in 0..(Length(target)-1))
+                for i in 0..(Length(target)-1)
                 {
                     if (target[i] == false)
                     {
@@ -358,7 +429,7 @@ namespace QUtilities
                 }
             }
 
-            // this can also be done in the following way using the Q# standard library
+            // this can also be done in the following way use the Q# standard library
             // but it's more expensive
             // let controlled_op = ControlledOnBitString(target, X);
             // controlled_op(qubitstring, success);

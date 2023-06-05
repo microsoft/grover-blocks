@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="FileHelpers" Version="3.4.0" />
-    <PackageReference Include="Microsoft.Quantum.Standard" Version="0.7.1905.3109" />
-    <PackageReference Include="Microsoft.Quantum.Development.Kit" Version="0.7.1905.3109" />
+    <PackageReference Include="Microsoft.Quantum.Standard" Version="0.24.208024" />
+    <PackageReference Include="Microsoft.Quantum.Development.Kit" Version="0.24.208024" />
   </ItemGroup>
 
 </Project>
